@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing_data_source</item>
+            <item name="deps" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">silk_cmstool_page_listing_columns</item>
+        <item name="buttons" xsi:type="array">
+            <item name="add" xsi:type="array">
+                <item name="name" xsi:type="string">add</item>
+                <item name="label" xsi:type="string" translate="true">Add Page</item>
+                <item name="class" xsi:type="string">primary</item>
+                <item name="url" xsi:type="string">cmstool/page/new</item>
+            </item>
+        </item>
+    </argument>
+    <dataSource name="silk_cmstool_page_listing_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
+            <argument name="name" xsi:type="string">silk_cmstool_page_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">page_id</argument>
+            <argument name="requestFieldName" xsi:type="string">page_id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">page_id</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+    </dataSource>
+    <container name="listing_top">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="template" xsi:type="string">ui/grid/toolbar</item>
+            </item>
+        </argument>
+        <bookmark name="bookmarks">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="namespace" xsi:type="string">silk_cmstool_page_listing</item>
+                    </item>
+                </item>
+            </argument>
+        </bookmark>
+        <component name="columns_controls">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="columnsData" xsi:type="array">
+                        <item name="provider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.silk_cmstool_page_listing_columns</item>
+                    </item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/controls/columns</item>
+                    <item name="displayArea" xsi:type="string">dataGridActions</item>
+                </item>
+            </argument>
+        </component>
+        <filters name="listing_filters">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="columnsProvider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.silk_cmstool_page_listing_columns</item>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="provider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.listing_top.bookmarks</item>
+                        <item name="namespace" xsi:type="string">current.filters</item>
+                    </item>
+                    <item name="childDefaults" xsi:type="array">
+                        <item name="provider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.listing_top.listing_filters</item>
+                        <item name="imports" xsi:type="array">
+                            <item name="visible" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.silk_cmstool_page_listing_columns.${ $.index }:visible</item>
+                        </item>
+                    </item>
+                </item>
+            </argument>
+            <!-- <filterSelect name="category_id" provider="${ $.parentName }" component="Magento_Ui/js/form/element/ui-select" template="ui/grid/filters/elements/ui-select">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="filterOptions" xsi:type="boolean">true</item>
+                        <item name="levelsVisibility" xsi:type="number">1</item>
+                    </item>
+                </argument>
+                <settings>
+                    <options class="Silk\CmsTool\Ui\Component\Listing\Column\Options"/>
+                    <caption translate="true">– Please Select a Category –</caption>
+                    <label translate="true">Categories</label>
+                    <dataScope>category_id</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect> -->
+            <!-- <filterSelect name="store_id">
+                <argument name="optionsProvider" xsi:type="configurableObject">
+                    <argument name="class" xsi:type="string">Magento\Cms\Ui\Component\Listing\Column\Cms\Options</argument>
+                </argument>
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="provider" xsi:type="string">${ $.parentName }</item>
+                       
+                        <item name="dataScope" xsi:type="string">store_id</item>
+                        <item name="label" xsi:type="string" translate="true">Store View </item>
+                        
+                        <item name="captionValue" xsi:type="string">0</item>
+                    </item>
+                </argument>
+            </filterSelect> -->
+        </filters>
+        <massaction name="listing_massaction">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="selectProvider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.silk_cmstool_page_listing_columns.ids</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/tree-massactions</item>
+                    <item name="indexField" xsi:type="string">page_id</item>
+                </item>
+            </argument>
+            <action name="delete">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">delete</item>
+                        <item name="label" xsi:type="string" translate="true">Delete</item>
+                        <item name="url" xsi:type="url" path="tool/page/massDelete"/>
+                        <item name="confirm" xsi:type="array">
+                            <item name="title" xsi:type="string" translate="true">Delete items</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure to delete selected items?</item>
+                        </item>
+                    </item>
+                </argument>
+            </action>
+            <action name="copy">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">copy</item>
+                        <item name="label" xsi:type="string" translate="true">Copy</item>
+                        <item name="url" xsi:type="url" path="tool/page/copy"/>
+                        <item name="confirm" xsi:type="array">
+                            <item name="title" xsi:type="string" translate="true">Copy items</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure to copy selected items?</item>
+                        </item>
+                    </item>
+                </argument>
+            </action>
+            <action name="batch_edit">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">batch_edit</item>
+                        <item name="label" xsi:type="string" translate="true">Batch Edit</item>
+                        <item name="url" xsi:type="url" path="tool/page/goToBatchEdit"/>
+                    </item>
+                </argument>
+            </action>
+        </massaction>
+        <paging name="listing_paging">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="provider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.listing_top.bookmarks</item>
+                        <item name="namespace" xsi:type="string">current.paging</item>
+                    </item>
+                    <item name="selectProvider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.silk_cmstool_page_listing_columns.ids</item>
+                </item>
+            </argument>
+        </paging>
+    </container>
+
+    <columns name="silk_cmstool_page_listing_columns">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="childDefaults" xsi:type="array">
+                    <item name="fieldAction" xsi:type="array">
+                        <item name="provider" xsi:type="string">silk_cmstool_page_listing.silk_cmstool_page_listing.silk_cmstool_page_listing_columns.actions</item>
+                        <item name="target" xsi:type="string">applyAction</item>
+                        <item name="params" xsi:type="array">
+                            <item name="0" xsi:type="string">edit</item>
+                            <item name="1" xsi:type="string">${ $.$data.rowIndex }</item>
+                        </item>
+                    </item>
+                </item>
+            </item>
+        </argument>
+        <selectionsColumn name="ids">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="indexField" xsi:type="string">page_id</item>
+                </item>
+            </argument>
+        </selectionsColumn>
+        <column name="page_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="label" xsi:type="string" translate="true">Page ID</item>
+                    <item name="sorting" xsi:type="string">desc</item>
+                    <item name="sortOrder" xsi:type="number">2</item>
+                </item>
+            </argument>
+        </column>
+        <column name="name">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Page Name</item>
+                    <item name="sortOrder" xsi:type="number">3</item>
+                </item>
+            </argument>
+        </column>
+        <actionsColumn name="baseactions" class="Silk\CmsTool\Ui\Component\Listing\Column\BaseActions">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="urlEntityParamName" xsi:type="string">page_id</item>
+                    <item name="sortOrder" xsi:type="number">14</item>
+                </item>
+            </argument>
+        </actionsColumn>
+    </columns>
+</listing>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Silk_CmsTool::cms_manage" title="Cms Manage" module="Silk_CmsTool" sortOrder="10" resource="Silk_CmsTool::cms_manage"/>
+        <add id="Silk_CmsTool::page_manage" title="Page List" module="Silk_CmsTool" sortOrder="10" action="cmstool/page/index" resource="Silk_CmsTool::page_manage" parent="Silk_CmsTool::cms_manage"/>
+        <add id="Silk_CmsTool::block_manage" title="Block List" module="Silk_CmsTool" sortOrder="20" action="cmstool/block/index" resource="Silk_CmsTool::block_manage" parent="Silk_CmsTool::cms_manage"/>
+    </menu>
+</config>

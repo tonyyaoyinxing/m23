@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <!-- <table name="cmstool_element" resource="default" engine="innodb" comment="CmsTool Element">
+        <column xsi:type="int" name="element_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Element ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
+        <column xsi:type="smallint" name="type" default="0" nullable="false" comment="Element Type"/>
+        <column xsi:type="text" name="element_json" nullable="false" comment="Element Json"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="element_id"/>
+        </constraint>
+        <index referenceId="CMSTOOL_BLOCK_ELEMENT_ID" indexType="btree">
+            <column name="element_id"/>
+        </index>
+    </table> -->
+    <table name="cmstool_element" resource="default" engine="innodb" comment="CmsTool Element">
+        <column xsi:type="int" name="element_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Element ID"/>
+        <column xsi:type="int" name="block_type_id" padding="10" unsigned="true" nullable="false" comment="Block Type ID"/>
+        <column xsi:type="text" name="element_json" nullable="false" comment="Element Json"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="element_id"/>
+        </constraint>
+        <index referenceId="CMSTOOL_BLOCK_ELEMENT_ID" indexType="btree">
+            <column name="element_id"/>
+        </index>
+        <index referenceId="CMSTOOL_BLOCK_TYPE_ID" indexType="btree">
+            <column name="block_type_id"/>
+        </index>
+    </table>
+    <table name="cmstool_block_type" resource="default" engine="innodb" comment="CmsTool Block Type">
+        <column xsi:type="int" name="block_type_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Block Type ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="50" comment="Type Name"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="block_type_id"/>
+        </constraint>
+        <index referenceId="CMSTOOL_BLOCK_TYPE_ID" indexType="btree">
+            <column name="block_type_id"/>
+        </index>
+        <constraint xsi:type="foreign" referenceId="BLOCK_TYPE_BLOCK_TYPE_ID_ELEMENT_BLOCK_TYPE_ID" table="cmstool_block_type"
+                    column="block_type_id" referenceTable="cmstool_element" referenceColumn="block_type_id" onDelete="CASCADE"/>
+    </table>
+    <table name="cmstool_block" resource="default" engine="innodb" comment="CmsTool Block">
+        <column xsi:type="int" name="block_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Block ID"/>
+        <column xsi:type="int" name="block_type_id" padding="10" unsigned="true" nullable="false" comment="Block Type ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
+        <column xsi:type="smallint" name="width" nullable="false" comment="Block Width"/>
+        <column xsi:type="smallint" name="height" nullable="false" comment="Block Height"/>
+        <column xsi:type="text" name="block_json" nullable="false" comment="Block Json"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="block_id"/>
+        </constraint>
+        <index referenceId="CMSTOOL_BLOCK_ID" indexType="btree">
+            <column name="block_id"/>
+        </index>
+        <constraint xsi:type="foreign" referenceId="BLOCK_BLOCK_TYPE_ID_BLOCK_TYPE_BLOCK_TYPE_ID" table="cmstool_block"
+                    column="block_type_id" referenceTable="cmstool_block_type" referenceColumn="block_type_id" onDelete="CASCADE"/>
+    </table>
+    <table name="cmstool_block_page" resource="default" engine="innodb" comment="CmsTool Page Block">
+        <column xsi:type="int" name="block_id" padding="10" unsigned="true" nullable="false" comment="Block ID"/>
+        <column xsi:type="int" name="page_id" padding="10" unsigned="true" nullable="false" comment="Page ID"/>
+        <column xsi:type="smallint" name="sort" nullable="false" comment="Block Sort"/>
+        <constraint xsi:type="foreign" referenceId="BLOCK_PAGE_BLOCK_ID_BLOCK_BLOCK_ID" table="cmstool_block_page"
+                    column="block_id" referenceTable="cmstool_block" referenceColumn="block_id" onDelete="CASCADE"/>
+        <index referenceId="CMSTOOL_PAGE_ID" indexType="btree">
+            <column name="page_id"/>
+        </index>
+    </table>
+
+    <table name="cmstool_page" resource="default" engine="innodb" comment="CmsTool Page">
+        <column xsi:type="int" name="page_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Page ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="page_id"/>
+        </constraint>
+        <index referenceId="CMSTOOL_PAGE_ID" indexType="btree">
+            <column name="page_id"/>
+        </index>
+        <constraint xsi:type="foreign" referenceId="PAGE_PAGE_ID_BLOCK_PAGE_PAGE_ID" table="cmstool_page"
+                    column="page_id" referenceTable="cmstool_block_page" referenceColumn="page_id" onDelete="CASCADE"/>
+    </table>
+</schema>

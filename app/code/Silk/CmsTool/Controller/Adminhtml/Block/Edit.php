@@ -9,6 +9,7 @@ use Silk\CmsTool\Api\Data\BlockInterface;
 use \Silk\CmsTool\Controller\Adminhtml\Block\AbstractBlock;
 class Edit extends AbstractBlock
 {
+    const REGISTRY_CODE = 'cmstool_block';
     /**
      * {@inheritdoc}
      */

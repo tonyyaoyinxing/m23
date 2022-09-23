@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-      <head>
-        <script src="Silk_CmsTool::js/App.js" />
-    </head>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
     <body>
         <referenceContainer name="content">
-            <block name="cmstool-vue" class="Magento\Framework\View\Element\Template" template="Silk_CmsTool::block_form.phtml" />
+            <uiComponent name="silk_cmstool_block_form"/>
+            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Tab\Nodes" name="silk_cmstool_block_tab_node"/>
         </referenceContainer>
     </body>
 </page>

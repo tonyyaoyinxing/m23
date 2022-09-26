@@ -5,7 +5,7 @@
     <body>
         <referenceContainer name="content">
             <uiComponent name="silk_cmstool_block_form"/>
-            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Tab\Nodes" name="silk_cmstool_block_tab_node"/>
+            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw" name="silk_cmstool_block_draw"/>
         </referenceContainer>
     </body>
 </page>

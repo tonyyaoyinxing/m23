@@ -6,7 +6,7 @@ use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Framework\Registry;
 use Silk\CmsTool\Api\NodeRepositoryInterface;
-use Silk\CmsTool\Controller\Adminhtml\Block\Edit;
+use Silk\CmsTool\Controller\Adminhtml\Menu\Edit;
 use Silk\CmsTool\Model\Block\Node\Image\File as ImageFile;
 use Silk\CmsTool\Model\NodeTypeProvider;
 use Silk\CmsTool\Model\VueProvider;
@@ -16,7 +16,7 @@ class Nodes extends Template implements TabInterface
     const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
     const IMAGE_DELETE_URL = 'cmstool/block/deleteimage';
 
-    protected $_template = 'block/nodes.phtml';
+    protected $_template = 'block/draw.phtml';
 
     /**
      * @var Registry
@@ -61,10 +61,10 @@ class Nodes extends Template implements TabInterface
 
     public function renderNodes()
     {
-        $block = $this->registry->registry(Edit::REGISTRY_CODE);
+        $menu = $this->registry->registry(Edit::REGISTRY_CODE);
         $data = [];
-        if ($block) {
-            $nodes = $this->nodeRepository->getByMenu($block->getId());
+        if ($menu) {
+            $nodes = $this->nodeRepository->getByMenu($menu->getId());
             if (!empty($nodes)) {
                 foreach ($nodes as $node) {
                     $level = $node->getLevel();
@@ -164,7 +164,7 @@ class Nodes extends Template implements TabInterface
         }
         $nodes = $data[$level][$parent];
         foreach ($nodes as $node) {
-            $block[] = [
+            $menu[] = [
                 'is_active' => $node->getIsActive(),
                 'is_stored' => true,
                 'type' => $node->getType(),
@@ -172,7 +172,7 @@ class Nodes extends Template implements TabInterface
                 'classes' => $node->getClasses(),
                 'target' => $node->getTarget(),
                 'node_template' => $node->getNodeTemplate(),
-                'subblock_template' => $node->getSubblockTemplate(),
+                'submenu_template' => $node->getSubmenuTemplate(),
                 'id' => $node->getId(),
                 'title' => $node->getTitle(),
                 'image' => $node->getImage(),
@@ -182,7 +182,7 @@ class Nodes extends Template implements TabInterface
                 'selected_item_id' => $node->getSelectedItemId()
             ];
         }
-        return $block;
+        return $menu;
     }
 
     public function getNodeForms()

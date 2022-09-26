@@ -7,7 +7,7 @@ interface NodeInterface
      * Constants for field names.
      */
     const NODE_ID = 'node_id';
-    const BLOCK_ID = 'block_id';
+    const MENU_ID = 'menu_id';
     const TYPE = 'type';
     const CONTENT = 'content';
     const CLASSES = 'classes';
@@ -40,19 +40,19 @@ interface NodeInterface
     public function setNodeId($nodeId);
 
     /**
-     * Get block id
+     * Get menu id
      *
      * @return int
      */
-    public function getBlockId();
+    public function getMenuId();
 
     /**
-     * Set block id
+     * Set menu id
      *
-     * @param int $blockId
+     * @param int $menuId
      * @return $this
      */
-    public function setBlockId($blockId);
+    public function setMenuId($menuId);
 
     /**
      * Get type

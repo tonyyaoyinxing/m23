@@ -1,7 +1,6 @@
 <?php
-/** @var \Silk\CmsTool\Block\Adminhtml\Edit\Tab\Nodes $block */
-var_dump("ssss");
-exit;
+/** @var \Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw $block */
+
 $fieldData = [];
 /** @var \Silk\CmsTool\Block\NodeType\AbstractNode $form */
 foreach ($block->getNodeForms() as $form) {
@@ -10,9 +9,9 @@ foreach ($block->getNodeForms() as $form) {
 $vueComponents = $block->getVueComponents();
 ?>
 
-<div id="cms-block">
-    <cms-block
-      ref="block"
+<div id="cmstool-block">
+    <snowdog-menu
+      ref="menu"
       :nodes="nodes"
       :config="config"
     >
@@ -34,7 +33,7 @@ $vueComponents = $block->getVueComponents();
 <script type="text/x-magento-init">
     {
         "*": {
-            "menuNodes": {
+            "blockElement": {
                 "vueComponents": <?= json_encode($vueComponents) ?>,
                 "data": {
                     "nodes"  : <?= json_encode($block->renderNodes()) ?>,

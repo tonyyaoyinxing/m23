@@ -2,10 +2,13 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
 >
+    <head>
+        <css src="css/vue-drag-resize.css" />
+    </head>
     <body>
         <referenceContainer name="content">
             <uiComponent name="silk_cmstool_block_form"/>
-            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw" name="silk_cmstool_block_draw"/>
+            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\MainDraw" name="silk_cmstool_block_draw"/>
         </referenceContainer>
     </body>
 </page>

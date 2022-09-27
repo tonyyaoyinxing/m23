@@ -14,7 +14,7 @@
             <button name="delete" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Delete"/>
             <button name="reset" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Reset"/>
             <button name="save" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Save"/>
-            <button name="draw" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Draw"/>
+            <button name="draw" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Preview"/>
         </buttons>
         <namespace>silk_cmstool_block_form</namespace>
         <dataScope>data</dataScope>
@@ -94,6 +94,59 @@
             </settings>
         </field>
     </fieldset>
+    <modal name="cmstool_block_preview_modal">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="onCancel" xsi:type="string">actionCancel</item>
+                <item name="options" xsi:type="array">
+                    <item name="buttons" xsi:type="array">
+                        <item name="0" xsi:type="array">
+                            <item name="text" xsi:type="string">Cancel</item>
+                            <item name="class" xsi:type="string">action-secondary</item>
+                            <item name="actions" xsi:type="array">
+                                <item name="0" xsi:type="string">actionCancel</item>
+                            </item>
+                        </item>
+                        <item name="1" xsi:type="array">
+                            <item name="text" xsi:type="string">Import</item>
+                            <item name="class" xsi:type="string">action-primary</item>
+                            <item name="actions" xsi:type="array">
+                                <item name="0" xsi:type="string">actionImport</item>
+                            </item>
+                        </item>
+                    </item>
+                </item>
+            </item>
+        </argument>
+        <fieldset name="general">
+            <settings>
+                <label>Import from categories tree</label>
+            </settings>
+            <field name="category_id" formElement="select">
+                <settings>
+                    <dataType>int</dataType>
+                    <label translate="true">Root Category</label>
+                </settings>
+                <formElements>
+                    <select>
+                        <settings>
+                            <options class="Snowdog\Menu\Ui\Component\Menu\Form\Element\Categories"/>
+                        </settings>
+                    </select>
+                </formElements>
+            </field>
+            <field name="depth" formElement="input">
+                <settings>
+                    <dataType>int</dataType>
+                    <label translate="true">Level of depth</label>
+                    <notice translate="true">Leave 0 for all child categories</notice>
+                    <validation>
+                        <rule name="validate-number" xsi:type="boolean">true</rule>
+                    </validation>
+                </settings>
+            </field>
+        </fieldset>
+    </modal>
     <fieldset name="main" sortOrder="20">
         <settings>
             <label translate="true">Main information</label>

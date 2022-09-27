@@ -3,6 +3,7 @@ define([
     "Vddl",
     "vue-select",
     "vue-treeselect",
+    "vdr",
     'uiRegistry',
     "vue!Silk_CmsTool/vue/app",
     "vue!Silk_CmsTool/vue/field-type/autocomplete",
@@ -13,7 +14,7 @@ define([
     "vue!Silk_CmsTool/vue/field-type/template-list",
     "vue!Silk_CmsTool/vue/menu-type",
     "vue!Silk_CmsTool/vue/nested-list"
-], function(Vue, Vddl, vueSelect, vueTreeselect, registry) {
+], function(Vue, Vddl, vueSelect, vueTreeselect,vdr, registry) {
 
     return function(config, element) {
         var dependencies = [];
@@ -27,7 +28,7 @@ define([
             Vue.component('v-select', vueSelect.VueSelect);
             Vue.component('treeselect', vueTreeselect.Treeselect);
             var app = new Vue({
-                el: config.el || "#snowdog-menu",
+                el: config.el || "#cmstool-block",
                 data: config.data
             });
             registry.set('vueApp', app);

@@ -10,8 +10,18 @@
             <div>
                 <button
                     class="panel__buttom panel__buttom--append"
-                    :title="config.translation.append"
-                    @click.prevent="addNode(list)"
+                    :title="config.translation.appendImage"
+                    @click.prevent="addImage(list)"
+                />
+                <button
+                    class="panel__buttom panel__buttom--append"
+                    :title="config.translation.appendText"
+                    @click.prevent="addText(list)"
+                />
+                <button
+                    class="panel__buttom panel__buttom--append"
+                    :title="config.translation.appendVideo"
+                    @click.prevent="addVideo(list)"
                 />
             </div>
         </div>
@@ -57,6 +67,7 @@
                     <div class="vddl-placeholder__inner" />
                 </vddl-placeholder>
             </vddl-list>
+            <block-image/>
         </div>
     </div>
 </template>
@@ -66,7 +77,7 @@
         'Vue',
         'uuid'
     ], function(Vue, uuid) {
-        Vue.component('snowdog-menu', {
+        Vue.component('cmstool-block', {
             props: {
                 nodes: {
                     type: Array,
@@ -128,6 +139,51 @@
                         uuid: this.uuid(),
                         type: 'category',
                         title: this.config.translation.addNode,
+                        content: null,
+                        image: null,
+                        image_alt_text: '',
+                        node_template: null,
+                        submenu_template: null,
+                        columns: [],
+                        is_active: 0
+                    });
+                },
+                addImage: function(target) {
+                    target.push({
+                        id: this.uuid(),
+                        uuid: this.uuid(),
+                        type: 'category',
+                        title: this.config.translation.addImage,
+                        content: null,
+                        image: null,
+                        image_alt_text: '',
+                        node_template: null,
+                        submenu_template: null,
+                        columns: [],
+                        is_active: 0
+                    });
+                },
+                addText: function(target) {
+                    target.push({
+                        id: this.uuid(),
+                        uuid: this.uuid(),
+                        type: 'category',
+                        title: this.config.translation.addText,
+                        content: null,
+                        image: null,
+                        image_alt_text: '',
+                        node_template: null,
+                        submenu_template: null,
+                        columns: [],
+                        is_active: 0
+                    });
+                },
+                addVideo: function(target) {
+                    target.push({
+                        id: this.uuid(),
+                        uuid: this.uuid(),
+                        type: 'category',
+                        title: this.config.translation.addVideo,
                         content: null,
                         image: null,
                         image_alt_text: '',

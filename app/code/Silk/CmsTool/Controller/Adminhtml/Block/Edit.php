@@ -16,7 +16,6 @@ class Edit extends AbstractBlock
     public function execute()
     {
         $blockId = (int)$this->getRequest()->getParam(BlockInterface::BLOCK_ID);
-
         try {
             if ($blockId) {
                 /** @var  \Silk\CmsTool\Model\Block $model */

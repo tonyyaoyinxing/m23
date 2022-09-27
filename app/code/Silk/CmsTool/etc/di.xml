@@ -35,7 +35,7 @@
             </argument>
         </arguments>
     </type>
-    <type name="Silk\CmsTool\Model\NodeTypeProvider">
+    <!-- <type name="Silk\CmsTool\Model\NodeTypeProvider">
         <arguments>
             <argument name="providers" xsi:type="array">
                 <item name="category" xsi:type="object">Silk\CmsTool\Block\NodeType\Category</item>
@@ -56,5 +56,5 @@
                 <item name="wrapper" xsi:type="object">Silk\CmsTool\Model\NodeType\Wrapper</item>
             </argument>
         </arguments>
-    </type>
+    </type> -->
 </config>

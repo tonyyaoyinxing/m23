@@ -1,23 +1,24 @@
 <?php
 
-namespace Silk\CmsTool\Block\Adminhtml\Edit\Tab;
+namespace Silk\CmsTool\Block\Adminhtml\Edit\Block;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Framework\Registry;
 use Silk\CmsTool\Api\NodeRepositoryInterface;
-use Silk\CmsTool\Controller\Adminhtml\Menu\Edit;
+use Silk\CmsTool\Controller\Adminhtml\Block\Edit;
 use Silk\CmsTool\Model\Block\Node\Image\File as ImageFile;
 use Silk\CmsTool\Model\NodeTypeProvider;
 use Silk\CmsTool\Model\VueProvider;
 
-class Nodes extends Template implements TabInterface
+class MainDraw extends Template implements TabInterface
 {
     const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
     const IMAGE_DELETE_URL = 'cmstool/block/deleteimage';
 
     protected $_template = 'block/draw.phtml';
 
+    
     /**
      * @var Registry
      */
@@ -58,7 +59,6 @@ class Nodes extends Template implements TabInterface
         $this->imageFile = $imageFile;
         $this->vueProvider = $vueProvider;
     }
-
     public function renderNodes()
     {
         $menu = $this->registry->registry(Edit::REGISTRY_CODE);
@@ -82,7 +82,6 @@ class Nodes extends Template implements TabInterface
         }
         return $data;
     }
-
     /**
      * Return Tab label
      *
@@ -91,7 +90,7 @@ class Nodes extends Template implements TabInterface
      */
     public function getTabLabel()
     {
-        return __("Nodes");
+        return __("Blocks");
     }
 
     /**
@@ -102,7 +101,7 @@ class Nodes extends Template implements TabInterface
      */
     public function getTabTitle()
     {
-        return __("Nodes");
+        return __("Blocks");
     }
 
     /**
@@ -126,7 +125,6 @@ class Nodes extends Template implements TabInterface
     {
         return false;
     }
-
     /**
      * @return string
      */
@@ -202,4 +200,5 @@ class Nodes extends Template implements TabInterface
     {
         return $this->vueProvider->getComponents();
     }
+    
 }

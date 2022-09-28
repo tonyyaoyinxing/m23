@@ -150,17 +150,17 @@
                 </multiselect>
             </formElements>
         </field>
-        <!-- <field name="serialized_nodes" formElement="hidden">
+        <field name="serialized_nodes" formElement="hidden">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="dataType" xsi:type="string">text</item>
                     <item name="default" xsi:type="string">[]</item>
                 </item>
             </argument>
-        </field> -->
+        </field>
     </fieldset>
 
-    <!-- <modal name="import_categories_tree_modal">
+    <modal name="import_categories_tree_modal">
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
                 <item name="onCancel" xsi:type="string">actionCancel</item>
@@ -212,5 +212,5 @@
                 </settings>
             </field>
         </fieldset>
-    </modal> -->
+    </modal>
 </form>

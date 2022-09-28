@@ -1,6 +1,4 @@
-require(['vue', 'Silk_CmsTool/js/components/btn'], function (Vue, btn) {
-    btn ();
-    
+require(['vue'], function (Vue) {
     new Vue ({
         el: '#root'
     });

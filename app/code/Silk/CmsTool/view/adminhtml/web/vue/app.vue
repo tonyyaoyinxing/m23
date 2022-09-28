@@ -7,67 +7,10 @@
                 <span>{{ config.translation.nodes }}</span>
             </div>
 
-            <div>
-                <button
-                    class="panel__buttom panel__buttom--append"
-                    :title="config.translation.appendImage"
-                    @click.prevent="addImage(list)"
-                />
-                <button
-                    class="panel__buttom panel__buttom--append"
-                    :title="config.translation.appendText"
-                    @click.prevent="addText(list)"
-                />
-                <button
-                    class="panel__buttom panel__buttom--append"
-                    :title="config.translation.appendVideo"
-                    @click.prevent="addVideo(list)"
-                />
-            </div>
         </div>
 
         <div class="panel__body">
-            <vddl-list
-                class="panel__body--list"
-                :list="list"
-                effect-allowed="move"
-                :external-sources="true"
-                :drop="handleDrop"
-            >
-                <template v-if="list.length > 0">
-                    <nested-list
-                        v-for="(item, index) in list"
-                        :key="item.uuid"
-                        :item="item"
-                        :list="list"
-                        :index="index"
-                        :selected="setSelectedNode"
-                        :selected-item="selectedItem"
-                        :delete="removeNode"
-                        :append="addNode"
-                        :drop="handleDrop"
-                        :config="config"
-                    />
-                </template>
-
-                <div
-                    v-else
-                    class="panel__empty-text"
-                >
-                    {{ config.translation.click }}
-                    <button
-                        class="panel__buttom panel__buttom--append"
-                        :title="config.translation.append"
-                        @click.prevent="addNode(list)"
-                    />
-                    {{ config.translation.createFirstNode }}
-                </div>
-
-                <vddl-placeholder>
-                    <div class="vddl-placeholder__inner" />
-                </vddl-placeholder>
-            </vddl-list>
-            <block-image/>
+            
         </div>
     </div>
 </template>

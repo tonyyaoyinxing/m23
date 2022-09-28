@@ -6,7 +6,7 @@ namespace Silk\CmsTool\Model;
 
 class VueProvider
 {
-    const COMPONENT_PATH = 'vue!Silk_CmsTool/vue/menu-type/%s';
+    const COMPONENT_PATH = 'vue!Silk_CmsTool/vue/element-type/%s';
 
     /**
      * @var array

@@ -1,17 +1,12 @@
 <?php
 /** @var \Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw $block */
 
-$fieldData = [];
-/** @var \Silk\CmsTool\Block\NodeType\AbstractNode $form */
-foreach ($block->getNodeForms() as $form) {
-    $fieldData[$form->getNodeType()] = $form->getJsonConfig();
-}
 $vueComponents = $block->getVueComponents();
 
 ?>
 
 <div id="cmstool-block">
-    <cmstool-block>
+    <cmstool-block :config="config" :element="element">
     </cmstool-block>
 </div>
 
@@ -21,16 +16,14 @@ $vueComponents = $block->getVueComponents();
             "blockElement": {
                 "vueComponents": <?= json_encode($vueComponents) ?>,
                 "data": {
-                    "nodes"  : <?= json_encode($block->renderNodes()) ?>,
+                    "element"  : <?= json_encode($block->renderElement()) ?>,
                     "config": {
-                        "fieldData"        : <?= json_encode($fieldData) ?>,
-                        "nodeTypes"        : <?= json_encode($block->getNodeLabels()) ?>,
                         "imageUploadUrl"   : "<?= $block->getImageUploadUrl() ?>",
                         "imageDeleteUrl"   : "<?= $block->getImageDeleteUrl() ?>",
                         "imageUploadFileId": "<?= $block->getImageUploadFileId() ?>",
                         "lazyMinItemsCount": "1000",
                         "translation": {
-                            "nodes"          : "<?= __('Block') ?>",
+                            "block"          : "<?= __('Block') ?>",
                             "click"          : "<?= __('Click') ?>",
                             "createFirstNode": "<?= __('to create your first node.') ?>",
                             "createSubNode"  : "<?= __('to create sub node or drag and drop other nodes here.') ?>",

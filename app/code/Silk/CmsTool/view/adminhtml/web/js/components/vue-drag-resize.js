@@ -1,7 +1,6 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global.VueDragResize = factory());
+    typeof define === 'function' && define(factory);
   }(this, (function () {
     const styleMapping = {
         y: {
@@ -28,6 +27,7 @@
         });
     }
     var vueDragResize = {
+        template: "<template><div><divid=\"side\"><divclass=\"fields\">Textbox</div><divclass=\"fields\">Checkbox</div><divclass=\"fields\">RadioButton</div><hr/><div>x:{{currentField.x}}</div><div>y:{{currentField.y}}</div><div>w:{{currentField.width}}</div><div>h:{{currentField.height}}</div><div>index:{{currentFieldIndex}}</div><hr/><button@click=\"setFieldProperties\">SetFieldProperties</button></div><divid=\"page-container\"><divv-for=\"p in pages\"class=\"page\":style=\"{ width: p.width + 'px', height: p.height + 'px' }\"><vue-drag-resize@clicked=\"onActivated(index);\"@activated=\"onActivated(index);\"@dragstop=\"onDragStop\"@resizestop=\"onResizeStop\":key=\"f.id\"v-for=\"(f, index) in getFields(p.pageNumber)\"class=\"field\":x=\"f.left\":y=\"f.top\":w=\"f.width\":h=\"f.height\":isActive=\"f.isActive\">{{f.id}}</vue-drag-resize></div></div></div></template>",
         name: 'vue-drag-resize',
         emits: ['clicked', 'dragging', 'dragstop', 'resizing', 'resizestop', 'activated', 'deactivated'],
         props: {
@@ -832,4 +832,20 @@
             },
         },
     }
-})));
+    var install = function (Vue) {
+      
+        Vue.component(vueDragResize.name, vueDragResize);
+    
+      };
+      
+      /* eslint no-undef:0 */
+      if (typeof window !== 'undefined' && window.Vue) {
+        install(window.Vue);
+      }
+      
+      var install$1 = { install: install };
+      
+      return install$1;
+
+  
+  })));

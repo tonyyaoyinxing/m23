@@ -1,17 +1,34 @@
 <template>
-    <div class="panel panel--open">
-        <div class="panel__heading">
-            <div class="panel__collapse" />
-
-            <div class="panel__heading-text">
-                <span>{{ config.translation.nodes }}</span>
-            </div>
-
+    <div id="app">
+        <div class="list" id="list">
+            <vue-drag-resize v-for="(rect, index) in element"
+                           :key="index"
+                           :w="rect.width"
+                           :h="rect.height"
+                           :x="rect.left"
+                           :y="rect.top"
+                           :parentW="listWidth"
+                           :parentH="listHeight"
+                           :axis="rect.axis"
+                           :isActive="rect.active"
+                           :minw="rect.minw"
+                           :minh="rect.minh"
+                           :isDraggable="rect.draggable"
+                           :isResizable="rect.resizable"
+                           :parentLimitation="rect.parentLim"
+                           :snapToGrid="rect.snapToGrid"
+                           :aspectRatio="rect.aspectRatio"
+                           :z="rect.zIndex"
+                           :contentClass="rect.class"
+                           v-on:activated="activateEv(index)"
+                           v-on:deactivated="deactivateEv(index)"
+                           v-on:dragging="changePosition($event, index)"
+                           v-on:resizing="changeSize($event, index)"
+            >
+                <div class="filler" :style="{backgroundColor:rect.color}"></div>
+            </vue-drag-resize>
         </div>
 
-        <div class="panel__body">
-            
-        </div>
     </div>
 </template>
 
@@ -22,7 +39,7 @@
     ], function(Vue, uuid) {
         Vue.component('cmstool-block', {
             props: {
-                nodes: {
+                element: {
                     type: Array,
                     required: true
                 },
@@ -30,43 +47,6 @@
                     type: Object,
                     required: true
                 }
-            },
-            data: function() {
-                return {
-                    list: [],
-                    selectedItem: null
-                };
-            },
-            computed: {
-                jsonList: function() {
-                    return JSON.stringify(this.list);
-                }
-            },
-            watch: {
-                jsonList: function (newValue) {
-                    this.updateSerializedNodes(newValue)
-                }
-            },
-            mounted () {
-                // check if serialized_nodes input loaded
-                const checkElement = async selector => {
-                    while (document.querySelector(selector) === null) {
-                        await new Promise( resolve => requestAnimationFrame(resolve) )
-                    }
-                    return document.querySelector(selector);
-                };
-
-                const setUuidRecursive = (item) => {
-                    item.uuid = this.uuid();
-                    item.columns.map(column => setUuidRecursive(column))
-                    return item;
-                };
-
-                // while loaded set JSON list as a value
-                checkElement('[name="serialized_nodes"]').then(() => {
-                    this.list = this.nodes.map(item => setUuidRecursive(item))
-                    this.updateSerializedNodes(this.jsonList);
-                });
             },
             methods: {
                 uuid,

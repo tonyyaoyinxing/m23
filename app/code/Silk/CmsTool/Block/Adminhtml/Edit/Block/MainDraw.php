@@ -84,6 +84,12 @@ class MainDraw extends Template implements TabInterface
     }
     public function renderElement(): array
     {
-        return [];
+        $element['width'] = 100;
+        $element['height'] = 100;
+        $element['left'] = 10;
+        $element['top'] = 10;
+        $element['isActive'] = false;
+        $data[] = $element;
+        return $data;
     }
 }

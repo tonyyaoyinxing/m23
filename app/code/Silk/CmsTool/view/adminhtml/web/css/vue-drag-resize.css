@@ -1,3 +1,7 @@
+#cmstool-block{
+    width:100%;
+    height:600px;
+}
 .vdr {
     position: absolute;
     box-sizing: border-box;

@@ -18,10 +18,6 @@ $vueComponents = $block->getVueComponents();
                 "data": {
                     "element"  : <?= json_encode($block->renderElement()) ?>,
                     "config": {
-                        "imageUploadUrl"   : "<?= $block->getImageUploadUrl() ?>",
-                        "imageDeleteUrl"   : "<?= $block->getImageDeleteUrl() ?>",
-                        "imageUploadFileId": "<?= $block->getImageUploadFileId() ?>",
-                        "lazyMinItemsCount": "1000",
                         "translation": {
                             "block"          : "<?= __('Block') ?>",
                             "click"          : "<?= __('Click') ?>",

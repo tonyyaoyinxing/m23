@@ -5,9 +5,8 @@ define([
     "vue-treeselect",
     "uiRegistry",
     "vueDragResize",
-    "toolbar",
     "vue!Silk_CmsTool/vue/app"
-], function(Vue, Vddl, vueSelect, vueTreeselect, registry,vueDragResize,toolbar) {
+], function(Vue, Vddl, vueSelect, vueTreeselect, registry,vueDragResize) {
 
     return function(config, element) {
         var dependencies = [];
@@ -18,8 +17,9 @@ define([
             // Vue.use(Vddl);
             // Vue.component('v-select', vueSelect.VueSelect);
             // Vue.component('treeselect', vueTreeselect.Treeselect);
-            Vue.component('vue-drag-resize', vueDragResize.vueDragResize);
-            Vue.component('toolbar', toolbar.toolbar);
+            Vue.use(vueDragResize);
+            // Vue.component('vue-drag-resize', vueDragResize.vueDragResize);
+            // Vue.component('toolbar', toolbar.toolbar);
             var app = new Vue({
                 el: config.el || "#cmstool-block",
                 data: config.data

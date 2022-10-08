@@ -27,7 +27,7 @@
         });
     }
     var vueDragResize = {
-        template: "<template><div><divid=\"side\"><divclass=\"fields\">Textbox</div><divclass=\"fields\">Checkbox</div><divclass=\"fields\">RadioButton</div><hr/><div>x:{{currentField.x}}</div><div>y:{{currentField.y}}</div><div>w:{{currentField.width}}</div><div>h:{{currentField.height}}</div><div>index:{{currentFieldIndex}}</div><hr/><button@click=\"setFieldProperties\">SetFieldProperties</button></div><divid=\"page-container\"><divv-for=\"p in pages\"class=\"page\":style=\"{ width: p.width + 'px', height: p.height + 'px' }\"><vue-drag-resize@clicked=\"onActivated(index);\"@activated=\"onActivated(index);\"@dragstop=\"onDragStop\"@resizestop=\"onResizeStop\":key=\"f.id\"v-for=\"(f, index) in getFields(p.pageNumber)\"class=\"field\":x=\"f.left\":y=\"f.top\":w=\"f.width\":h=\"f.height\":isActive=\"f.isActive\">{{f.id}}</vue-drag-resize></div></div></div></template>",
+        template: "<div class=\"vdr\" :style=\"positionStyle\" :class=\"`${(active || isActive) ? 'active' : 'inactive'} ${contentClass ? contentClass: ''}`\"@mousedown=\"bodyDown($event)\"@touchstart=\"bodyDown($event)\"@touchend=\"up($event)\"><div :style=\"sizeStyle\" class=\" content-container\" ref=\"container\"><slot></slot></div><div v-for=\"stick in sticks\" class=\"vdr-stick\" :class=\"['vdr-stick-' + stick, isResizable ? '' : 'not-resizable']\" @mousedown.stop.prevent=\"stickDown(stick, $event)\" @touchstart.stop.prevent=\"stickDown(stick, $event)\" :style=\"vdrStick(stick)\"></div></div>",
         name: 'vue-drag-resize',
         emits: ['clicked', 'dragging', 'dragstop', 'resizing', 'resizestop', 'activated', 'deactivated'],
         props: {

@@ -1,20 +1,17 @@
 <template>
     <div id="app">
         <div class="list-toolbar">
-            <button
-                class="panel__buttom panel__buttom--image"
-                :title="config.translation.append"
-                @click.prevent="addElement()"
-            />
-            <button
-                class="panel__buttom panel__buttom--append"
-                :title="config.translation.append"
-                @click.prevent="addElement()"
-            />
+            <c-button :elements="elements" :title="config.translation.text"></c-button>
+            <c-button :elements="elements" :title="config.translation.image"></c-button>
+            <c-button :elements="elements" :title="config.translation.background"></c-button>
+            <c-button :elements="elements" :title="config.translation.video"></c-button>
+            <c-button :elements="elements" :title="config.translation.product"></c-button>
+            <c-button :elements="elements" :title="config.translation.category"></c-button>
+            <c-button :elements="elements" :title="config.translation.countdown"></c-button>
         </div>
         
         <div class="list" id="list">
-            <vue-drag-resize v-for="(rect, index) in element"
+            <vue-drag-resize v-for="(rect, index) in elements"
                            :key="index"
                            :w="rect.width"
                            :h="rect.height"
@@ -46,9 +43,8 @@
 
 <script>
     define([
-        'Vue',
-        'uuid'
-    ], function(Vue, uuid) {
+        'Vue'
+    ], function(Vue) {
         Vue.component('cmstool-block', {
             data() {
                 return {
@@ -63,82 +59,11 @@
                     parentLim: false,
                     snapToGrid: false,
                     aspectRatio: false,
-                    axis: "both",
-                    pages: [
-                        { pageNumber: 1, width: 500, height: 1000 },
-                        { pageNumber: 2, width: 600, height: 1100 },
-                        { pageNumber: 3, width: 550, height: 300 }
-                    ],
-                    fields: [
-                        {
-                        id: "001",
-                        pageNumber: 1,
-                        left: 100,
-                        top: 100,
-                        width: 200,
-                        height: 30,
-                        isActive: false
-                        },
-                        {
-                        id: "002",
-                        pageNumber: 1,
-                        left: 100,
-                        top: 200,
-                        width: 100,
-                        height: 30,
-                        isActive: false
-                        },
-                        {
-                        id: "003",
-                        pageNumber: 2,
-                        left: 400,
-                        top: 120,
-                        width: 50,
-                        height: 30,
-                        isActive: false
-                        }
-                    ],
-                    icon: false,
-                    debug: false,
-                    info: "",
-                    version: "",
-                    test: "Timmy",
-                    family: ["Mike", "Kira", "Joelle", "Brady", "Trevor"],
-                    options: [
-                        "item 1",
-                        "item 2",
-                        "item 3",
-                        "item 4",
-                        "item 5",
-                        "item 5",
-                        "item 6",
-                        "item 7",
-                        "item 8",
-                        "item 9",
-                        "item 10",
-                        "item 11",
-                        "item 12",
-                        "item 13",
-                        "item 14",
-                        "item 15",
-                        "item 16",
-                        "item 17",
-                        "item 18",
-                        "item 19",
-                        "item 20",
-                    ],
-                    optionsObject: [
-                        { slug: "item-one", value: "item 1", disabled: false },
-                        { slug: "item-two", value: "item 2", disabled: false },
-                        { slug: "item-three", value: "item 3 (disabled)", disabled: true },
-                        { slug: "item-four", value: "item 4", disabled: false, separator: true },
-                        { slug: "item-five", value: "item 5", disabled: false },
-                    ],
-                    newOptions: ["item 1", "item 2", "item 3", "item 4", "item 5", "item 5"],
+                    axis: "both"
                 };
             },
             props: {
-                element: {
+                elements: {
                     type: Array,
                     required: true
                 },
@@ -182,47 +107,28 @@
                     
                 },
                 addElement: function() {
-                    this.element.push({
-                        width: 100,
-                        height: 100,
-                        left: 10,
-                        top: 10,
-                        isActive: true
-                    });
-                },
-                handleCloseMessage() {
-                    console.log("Vue Messenger Event: close messasge event")
-                },
-                titleMessageOnly(type = "default") {
-                    this.$refs["vue-messenger"].updateMessage({ type, title: "Title", icon: this.icon, debug: this.debug })
-                },
-                textMessageOnly(type = "default") {
-                    this.$refs["vue-messenger"].updateMessage({ type, description: "Text Only", icon: this.icon, debug: this.debug })
-                },
-                updateMessage(type = "info", more = null) {
-                    this.$refs["vue-messenger"].updateMessage({
-                        type,
-                        title: "Message Title",
-                        description: "Message Description",
-                        more,
-                        moreLinkdescription: "click me",
-                        icon: this.icon,
-                        debug: this.debug,
-                    })
-                },
-
-                onButtonClick(data) {
-                    this.info = JSON.stringify(data)
-                        .replaceAll(",", ", ")
-                        .replaceAll(":", ": ")
-
-                    if (data.name.includes("missing")) {
-                        return
+                    switch(this.title){
+                        case "text":
+                            //这里是值对应的处理
+                            break
+                        case "image":
+                            //这里是值对应的处理
+                            break
+                        case "background":
+                            //这里是值对应的处理
+                            break
+                        default:
+                            //这里是没有找到对应的值处理
+                            break
                     }
-
-                    console.warn("onButtonClick: ", this.info)
-                    this.$refs["vue-messenger"].updateMessage({ type: "info", title: data.name, description: this.info, icon: true })
-                },
+                    // this.elements.push({
+                    //     width: 100,
+                    //     height: 100,
+                    //     left: 10,
+                    //     top: 10,
+                    //     isActive: true
+                    // });
+                }
             },
             template: template
         });

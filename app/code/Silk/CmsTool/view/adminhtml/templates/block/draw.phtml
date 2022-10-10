@@ -6,7 +6,7 @@ $vueComponents = $block->getVueComponents();
 ?>
 
 <div id="cmstool-block">
-    <cmstool-block :config="config" :element="element">
+    <cmstool-block :config="config" :elements="elements">
     </cmstool-block>
 </div>
 
@@ -16,38 +16,16 @@ $vueComponents = $block->getVueComponents();
             "blockElement": {
                 "vueComponents": <?= json_encode($vueComponents) ?>,
                 "data": {
-                    "element"  : <?= json_encode($block->renderElement()) ?>,
+                    "elements"  : <?= json_encode($block->renderElements()) ?>,
                     "config": {
                         "translation": {
-                            "block"          : "<?= __('Block') ?>",
-                            "click"          : "<?= __('Click') ?>",
-                            "createFirstNode": "<?= __('to create your first node.') ?>",
-                            "createSubNode"  : "<?= __('to create sub node or drag and drop other nodes here.') ?>",
-                            "append"         : "<?= __('Append') ?>",
-                            "edit"           : "<?= __('Edit') ?>",
-                            "delete"         : "<?= __('Delete') ?>",
-                            "addNode"        : "<?= __('New node') ?>",
-                            "addImage"        : "<?= __('New Image') ?>",
-                            "addText"        : "<?= __('New Text') ?>",
-                            "addVideo"        : "<?= __('New Video') ?>",
-                            "nodeType"       : "<?= __('Node Type') ?>",
-                            "nodeName"       : "<?= __('Node name') ?>",
-                            "nodeClasses"    : "<?= __('Node CSS classes') ?>",
-                            "selectNodeType" : "<?= __('Select Node Type') ?>",
-                            "pleaseSelect"   : "<?= __('Please select a') ?>",
-                            "targetLabel"    : "<?= __('Node target blank') ?>",
-                            "category"       : "<?= __('Category') ?>",
-                            "categoryChild"  : "<?= __('Parent Category') ?>",
-                            "categoryId"     : "<?= __('Category ID') ?>",
-                            "block"          : "<?= __('Block') ?>",
-                            "blockId"        : "<?= __('Block ID') ?>",
-                            "page"           : "<?= __('Page') ?>",
-                            "pageId"         : "<?= __('Page URL key') ?>",
-                            "customURL"      : "<?= __('Custom URL') ?>",
-                            "product"        : "<?= __('Product') ?>",
-                            "productId"      : "<?= __('Product ID') ?>",
-                            "imageAltText"   : "<?= __('Image Alt text') ?>",
-                            "selectedItemId" : "<?= __('Selected Item Id') ?>"
+                            "text"         : "<?= __('文本') ?>",
+                            "image"         : "<?= __('图片') ?>",
+                            "background"         : "<?= __('背景图') ?>",
+                            "video"         : "<?= __('视频') ?>",
+                            "countdown"         : "<?= __('倒计时') ?>",
+                            "product"         : "<?= __('产品') ?>",
+                            "category"         : "<?= __('分类') ?>"
                         }
                     }
                 }

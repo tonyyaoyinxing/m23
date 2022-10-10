@@ -82,7 +82,7 @@ class MainDraw extends Template implements TabInterface
     {
         return $this->vueProvider->getComponents();
     }
-    public function renderElement(): array
+    public function renderElements(): array
     {
         $element['width'] = 100;
         $element['height'] = 100;

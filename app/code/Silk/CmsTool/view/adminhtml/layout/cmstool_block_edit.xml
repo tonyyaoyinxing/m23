@@ -4,7 +4,11 @@
 >
     <head>
         <css src="Silk_CmsTool::css/vue-drag-resize.css" />
-        <css src="Silk_CmsTool::css/vue-toolbar-button.css" />
+        <css src="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" src_type="url"/>
+        <css src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" src_type="url"/>
+        <script src="//unpkg.com/vue@latest/dist/vue.min.js" src_type="url"/>
+        <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js" src_type="url"/>
+        <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js" src_type="url"/>
     </head>
     <body>
         <referenceContainer name="content">

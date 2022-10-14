@@ -2,12 +2,12 @@
     <div id="app">
         <div class="list-toolbar">
             <c-button :elements="elements" :title="config.translation.text"></c-button>
-            <c-button :elements="elements" :title="config.translation.image"></c-button>
+            <!-- <c-button :elements="elements" :title="config.translation.image"></c-button>
             <c-button :elements="elements" :title="config.translation.background"></c-button>
             <c-button :elements="elements" :title="config.translation.video"></c-button>
             <c-button :elements="elements" :title="config.translation.product"></c-button>
             <c-button :elements="elements" :title="config.translation.category"></c-button>
-            <c-button :elements="elements" :title="config.translation.countdown"></c-button>
+            <c-button :elements="elements" :title="config.translation.countdown"></c-button> -->
         </div>
         
         <div class="list" id="list">
@@ -59,7 +59,7 @@
                     parentLim: false,
                     snapToGrid: false,
                     aspectRatio: false,
-                    axis: "both"
+                    axis: "both",
                 };
             },
             props: {
@@ -105,29 +105,6 @@
 
                 changeSize(newRect, index) {
                     
-                },
-                addElement: function() {
-                    switch(this.title){
-                        case "text":
-                            //这里是值对应的处理
-                            break
-                        case "image":
-                            //这里是值对应的处理
-                            break
-                        case "background":
-                            //这里是值对应的处理
-                            break
-                        default:
-                            //这里是没有找到对应的值处理
-                            break
-                    }
-                    // this.elements.push({
-                    //     width: 100,
-                    //     height: 100,
-                    //     left: 10,
-                    //     top: 10,
-                    //     isActive: true
-                    // });
                 }
             },
             template: template

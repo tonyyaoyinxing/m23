@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <head>
+        <css src="Silk_CmsTool::css/vue-drag-resize.css" />
+        <remove src="css/styles-old.css" />
+        <remove src="css/styles.css" />
+        <remove src="extjs/resources/css/ext-all.css" />
+        <remove src="jquery/jstree/themes/default/style.css" />
+        <remove src="extjs/resources/css/ytheme-magento.css" />
+        <css src="Silk_CmsTool::css/element.css"/>
+        <!-- <css src="//unpkg.com/element-ui/lib/theme-chalk/index.css" src_type="url"/> -->
+        <script src="Silk_CmsTool::js/vue.js"/>
+        <script src="Silk_CmsTool::js/lib/elementUi.js"/>
+        <script src="Silk_CmsTool::js/components/vue-drag-resize.js"/>
+    </head>
+    <body>
+        <referenceContainer name="menu.wrapper" remove="true" />
+        <referenceContainer name="page.wrapper" remove="true" />
+        <referenceContainer name="footer-container" remove="true" />
+        <referenceContainer name="after.body.start" remove="true"/>
+        <container name="content">
+            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\MainDraw" name="silk_cmstool_block_draw" template="Silk_CmsTool::block/draw.phtml"/>
+        </container>
+    </body>
+</page>

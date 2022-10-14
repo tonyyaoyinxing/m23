@@ -4,16 +4,18 @@
 >
     <head>
         <css src="Silk_CmsTool::css/vue-drag-resize.css" />
-        <css src="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" src_type="url"/>
+        <!-- <css src="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" src_type="url"/>
         <css src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" src_type="url"/>
-        <script src="//unpkg.com/vue@latest/dist/vue.min.js" src_type="url"/>
+        <script src="Silk_CmsTool::js/vue.min.css"/>
         <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js" src_type="url"/>
-        <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js" src_type="url"/>
+        <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js" src_type="url"/> -->
+        <!-- <script src="Silk_CmsTool::js/Vue.js"/> -->
+        <css src="Silk_CmsTool::css/element.css"/>
     </head>
     <body>
         <referenceContainer name="content">
             <uiComponent name="silk_cmstool_block_form"/>
-            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\MainDraw" name="silk_cmstool_block_draw"/>
-        </referenceContainer>
+            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\Edit" name="silk_cmstool_block_edit" template="Silk_CmsTool::block/edit.phtml"/>
+        </referenceContainer> 
     </body>
 </page>

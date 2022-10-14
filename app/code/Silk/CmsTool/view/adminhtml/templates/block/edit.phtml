@@ -1,0 +1,58 @@
+<?php
+
+?>
+<button id="modal-btn">Draw Block</button>
+<button id="add-block" style="display: none;"></button>
+<div id="modal-content">
+    <div class="modal-inner-content">
+        <h2>Modal Title</h2>
+        <p>Modal content.....</p>
+        <input class="admin__control-text" type="text" id="width" name="width" maxlength="255">
+        <input class="admin__control-text" type="text" id="height" name="height" maxlength="255">
+    </div>
+</div>
+<script>
+    require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal',
+            'popupWindow'
+        ],
+        function($, modal) {
+            var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: true,
+                title: 'Create Block',
+                buttons: [{
+                    text: $.mage.__('Close'),
+                    class: 'modal-close',
+                    click: function (){
+                        this.closeModal();
+                    }
+                },{
+                    text: $.mage.__('Create'),
+                    class: 'modal-add',
+                    click: function (){
+                        $("#add-block").click();
+                        this.closeModal();
+                    }
+                }]
+            };
+            modal(options, $('#modal-content'));
+            $("#modal-btn").on('click',function(){
+                $("#modal-content").modal("openModal");
+            });
+            $("#add-block").popupWindow({
+                "windowURL": "<?= $block->getDrawUrl() ?>",
+                "windowName": "Draw Block",
+                "width": $('#width').val(),
+                "height": $('#height').val(),
+                "left": 0,
+                "top": 0,
+                "resizable": 1,
+                "scrollbars": 1
+            });
+        }
+    );
+</script>

@@ -56,7 +56,7 @@
                     draggable: true,
                     resizable: true,
                     zIndex: 1,
-                    parentLim: false,
+                    parentLim: true,
                     snapToGrid: false,
                     aspectRatio: false,
                     axis: "both",

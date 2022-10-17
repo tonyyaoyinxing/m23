@@ -829,11 +829,4 @@ var vueDragResize = {
         },
     },
 }
-var install = function (Vue) {
-    Vue.component(vueDragResize.name, vueDragResize);
-};
-
-/* eslint no-undef:0 */
-if (typeof window !== 'undefined' && window.Vue) {
-    install(window.Vue);
-}
+Vue.component(vueDragResize.name, vueDragResize);

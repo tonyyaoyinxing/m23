@@ -1,74 +1,73 @@
 
 <div id="app">
-    <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
-      <el-radio-button :label="false">展开</el-radio-button>
-      <el-radio-button :label="true">收起</el-radio-button>
-    </el-radio-group>
-    <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航一</span>
-        </template>
-        <el-menu-item-group>
-          <span slot="title">分组一</span>
-          <el-menu-item index="1-1">选项1</el-menu-item>
-          <el-menu-item index="1-2">选项2</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="分组2">
-          <el-menu-item index="1-3">选项3</el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="1-4">
-          <span slot="title">选项4</span>
-          <el-menu-item index="1-4-1">选项1</el-menu-item>
+  <el-container style="height: 500px; border: 1px solid #eee">
+    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+      <el-menu>
+        <el-submenu index="1">
+          <template slot="title"><i class="el-icon-message"></i>图片</template>
+          <el-menu-item-group>
+            <el-menu-item index="1-1">背景图</el-menu-item>
+            <el-menu-item index="1-2">图片</el-menu-item>
+          </el-menu-item-group>
         </el-submenu>
-      </el-submenu>
-      <el-menu-item index="2">
-        <i class="el-icon-menu"></i>
-        <span slot="title">导航二</span>
-      </el-menu-item>
-      <el-menu-item index="3" disabled>
-        <i class="el-icon-document"></i>
-        <span slot="title">导航三</span>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <i class="el-icon-setting"></i>
-        <span slot="title">导航四</span>
-      </el-menu-item>
-      <div class="draw-main">
-        <div class="list" id="list">
-            <VueDragResize v-for="(rect, index) in elements"
-                            :key="index"
-                            :w="rect.width"
-                            :h="rect.height"
-                            :x="rect.left"
-                            :y="rect.top"
-                            :parentW="listWidth"
-                            :parentH="listHeight"
-                            :axis="rect.axis"
-                            :isActive="rect.active"
-                            :minw="rect.minw"
-                            :minh="rect.minh"
-                            :isDraggable="rect.draggable"
-                            :isResizable="rect.resizable"
-                            :parentLimitation="rect.parentLim"
-                            :snapToGrid="rect.snapToGrid"
-                            :aspectRatio="rect.aspectRatio"
-                            :z="rect.zIndex"
-                            :contentClass="rect.class"
-                            v-on:activated="activateEv(index)"
-                            v-on:deactivated="deactivateEv(index)"
-                            v-on:dragging="changePosition($event, index)"
-                            v-on:resizing="changeSize($event, index)"
-            >
-                <div class="filler" :style="{backgroundColor:rect.color}"></div>
-            </VueDragResize>
+        <el-submenu index="2">
+          <template slot="title"><i class="el-icon-menu"></i>视频</template>
+          <el-menu-item-group>
+            <el-menu-item index="2-1">视频</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+        <el-submenu index="3">
+          <template slot="title"><i class="el-icon-setting"></i>文本</template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">文本</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+        <el-submenu index="3">
+          <template slot="title"><i class="el-icon-setting"></i>时间</template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">倒计时</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
+    </el-aside>
+    
+    <el-container>
+      <el-main>
+        <div class="draw-main">
+          <div class="list" id="list">
+              <vue-drag-resize :parentW="200" :parentH="200" v-for="(rect, index) in elements"
+                              :key="index" 
+                              :w="rect.width"
+                              :h="rect.height"
+                              :x="rect.left"
+                              :y="rect.top"
+                              :parentW="listWidth"
+                              :parentH="listHeight"
+                              :axis="rect.axis"
+                              :isActive="rect.active"
+                              :minw="rect.minw"
+                              :minh="rect.minh"
+                              :isDraggable="rect.draggable"
+                              :isResizable="rect.resizable"
+                              :parentLimitation="true"
+                              :snapToGrid="rect.snapToGrid"
+                              :aspectRatio="rect.aspectRatio"
+                              :z="rect.zIndex"
+                              :contentClass="rect.class"
+                              v-on:activated="activateEv(index)"
+                              v-on:deactivated="deactivateEv(index)"
+                              v-on:dragging="changePosition($event, index)"
+                              v-on:resizing="changeSize($event, index)"
+              >
+                  <div class="filler" :style="{backgroundColor:rect.color}"></div>
+              </vue-drag-resize>
+          </div>
         </div>
-      </div>
-    </el-menu>
+      </el-main>
+    </el-container>
+  </el-container>
 </div>
 <script>
-  
 new Vue({
   el: '#app',
   data: function() {
@@ -80,9 +79,6 @@ new Vue({
        elements:<?= json_encode($block->renderElements()) ?>,
     }
   },
-  components: {
-            VueDragResize,
-        },
   mounted() {
       let listEl = document.getElementById('list');
       this.listWidth = listEl.clientWidth;

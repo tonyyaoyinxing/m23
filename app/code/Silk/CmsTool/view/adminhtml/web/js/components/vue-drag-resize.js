@@ -24,7 +24,7 @@ function removeEvents(events) {
     });
 }
 var vueDragResize = {
-    template: "<div class=\"vdr\"<div class=\"vdr\" :style=\"positionStyle\" :class=\"`${(active || isActive) ? 'active' : 'inactive'} ${contentClass ? contentClass: ''}`\"@mousedown=\"bodyDown($event)\"@touchstart=\"bodyDown($event)\"@touchend=\"up($event)\"><div :style=\"sizeStyle\" class=\" content-container\" ref=\"container\"><slot></slot></div><div v-for=\"stick in sticks\" class=\"vdr-stick\" :class=\"['vdr-stick-' + stick, isResizable ? '' : 'not-resizable']\" @mousedown.stop.prevent=\"stickDown(stick, $event)\" @touchstart.stop.prevent=\"stickDown(stick, $event)\" :style=\"vdrStick(stick)\"></div></div>",
+    template: "<div class=\"vdr\" :style=\"positionStyle\" :class=\"`${(active || isActive) ? 'active' : 'inactive'} ${contentClass ? contentClass: ''}`\"@mousedown=\"bodyDown($event)\"@touchstart=\"bodyDown($event)\"@touchend=\"up($event)\"><div :style=\"sizeStyle\" class=\" content-container\" ref=\"container\"><slot></slot></div><div v-for=\"stick in sticks\" class=\"vdr-stick\" :class=\"['vdr-stick-' + stick, isResizable ? '' : 'not-resizable']\" @mousedown.stop.prevent=\"stickDown(stick, $event)\" @touchstart.stop.prevent=\"stickDown(stick, $event)\" :style=\"vdrStick(stick)\"></div></div>",
     name: 'vue-drag-resize',
     emits: ['clicked', 'dragging', 'dragstop', 'resizing', 'resizestop', 'activated', 'deactivated'],
     props: {
@@ -53,7 +53,7 @@ var vueDragResize = {
             type: Boolean, default: false,
         },
         parentLimitation: {
-            type: Boolean, default: false,
+            type: Boolean, default: true,
         },
         snapToGrid: {
             type: Boolean, default: false,
@@ -244,7 +244,6 @@ var vueDragResize = {
             if (!this.stickDrag && !this.bodyDrag) {
                 return;
             }
-
             ev.stopPropagation();
 
             const pageX = typeof ev.pageX !== 'undefined' ? ev.pageX : ev.touches[0].pageX;

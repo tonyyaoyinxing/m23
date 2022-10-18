@@ -9,6 +9,7 @@ use Silk\CmsTool\Model\VueProvider;
 
 class MainDraw extends Template implements TabInterface
 {
+    const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
     protected $_template = 'block/draw.phtml';
     /**
      * @var Registry
@@ -74,7 +75,13 @@ class MainDraw extends Template implements TabInterface
         return false;
     }
 
-
+    /**
+     * @return string
+     */
+    public function getImageUploadUrl()
+    {
+        return $this->getUrl(self::IMAGE_UPLOAD_URL);
+    }
     /**
      * @return array
      */
@@ -84,6 +91,7 @@ class MainDraw extends Template implements TabInterface
     }
     public function renderElements(): array
     {
+        $data = [];
         $element['width'] = 100;
         $element['height'] = 100;
         $element['left'] = 10;

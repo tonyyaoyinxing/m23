@@ -6,26 +6,26 @@
         <el-submenu index="1">
           <template slot="title"><i class="el-icon-message"></i>图片</template>
           <el-menu-item-group>
-            <el-menu-item index="1-1">背景图</el-menu-item>
-            <el-menu-item index="1-2">图片</el-menu-item>
+            <el-menu-item index="1-1" @click="addElement(1)" @click="openBackgroud">背景图</el-menu-item>
+            <el-menu-item index="1-2" @click="addElement(2)" @click="openImage">图片</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title"><i class="el-icon-menu"></i>视频</template>
           <el-menu-item-group>
-            <el-menu-item index="2-1">视频</el-menu-item>
+            <el-menu-item index="2-1" @click="addElement(3)" @click="openVideo">视频</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="3">
           <template slot="title"><i class="el-icon-setting"></i>文本</template>
           <el-menu-item-group>
-            <el-menu-item index="3-1">文本</el-menu-item>
+            <el-menu-item index="3-1" @click="addElement(4)" @click="openText">文本</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="3">
           <template slot="title"><i class="el-icon-setting"></i>时间</template>
           <el-menu-item-group>
-            <el-menu-item index="3-1">倒计时</el-menu-item>
+            <el-menu-item index="3-1" @click="addElement(5)" @click="openTime">倒计时</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
@@ -34,8 +34,8 @@
     <el-container>
       <el-main>
         <div class="draw-main">
-          <div class="list" id="list">
-              <vue-drag-resize :parentW="200" :parentH="200" v-for="(rect, index) in elements"
+          <div class="list" id="list" :isDraggable="true">
+              <vue-drag-resize v-for="(rect, index) in elements"
                               :key="index" 
                               :w="rect.width"
                               :h="rect.height"
@@ -59,13 +59,47 @@
                               v-on:dragging="changePosition($event, index)"
                               v-on:resizing="changeSize($event, index)"
               >
-                  <div class="filler" :style="{backgroundColor:rect.color}"></div>
+                  <div class="filler" :style="{backgroundColor:rect.color}">
+                    <el-button type="primary" icon="el-icon-edit" size="mini" round></el-button><el-button type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
+                  </div>
               </vue-drag-resize>
           </div>
         </div>
       </el-main>
     </el-container>
   </el-container>
+  <div class="tab-container">
+    <el-dialog :visible.sync="dialogFormVisible">
+      <el-form
+        :model="questionForm"
+        ref="dataForm"
+        label-position="left"
+        label-width="90px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item label="宽度">
+          <el-input v-model="questionForm.width" />
+        </el-form-item>
+        <el-form-item label="高度">
+          <el-input v-model="questionForm.height" />
+        </el-form-item>
+        <el-upload
+          action="#"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove">
+          <i class="el-icon-plus"></i>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click=" createData() ">确定</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </div>
 <script>
 new Vue({
@@ -74,9 +108,15 @@ new Vue({
     return {
        visible: false,
        isCollapse: true,
-       listWidth: 0,
-       listHeight: 0,
+       listWidth: 200,
+       listHeight: 200,
        elements:<?= json_encode($block->renderElements()) ?>,
+        input: "",
+        questionForm: {
+          width: "",
+          height: "",
+        },
+        dialogFormVisible: false,
     }
   },
   mounted() {
@@ -123,7 +163,92 @@ new Vue({
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+      addElement(type) {
+          
+          
+      },
+      removeElement(elements,index){
+        this.elements.splice(index, 1);
+        //elements.splice(elements.indexOf(element), 1);
+      },
+      addElement(type) {
+        switch(type){
+            case 1:
+              this.questionForm = {
+                type:"1",
+                width: "",
+                height: "",
+              };
+              break
+            case 2:
+              // this.elements.push({
+              //       width: 100,
+              //       height: 100,
+              //       left: 10,
+              //       top: 10,
+              //       isActive: true
+              //   });
+              this.questionForm = {
+                type:"2",
+                width: "",
+                height: "",
+              };
+                break
+            case 3:
+              this.questionForm = {
+                type:"3",
+                width: "",
+                height: "",
+              };
+              break
+            default:
+                //这里是没有找到对应的值处理
+              break
+        }
+        
+        this.dialogFormVisible = true;
+      },
+      //添加增加题目
+      async createData() {
+        const params = this.questionForm;
+        alert(JSON.stringify(params))
+
+        //如果需要调用接口，请打开注释
+      //   const res = await saveSubject(params);
+      //   console.log(res);
+      //   if (res.code === "0000") {
+      //     this.$message({
+      //       type: "info",
+      //       message: "保存成功",
+      //     });
+      //     this.dialogFormVisible = false;
+      //     this.getQuerySubjectList();
+      //     return;
+      //   }
+      //   this.$message({
+      //     type: "error",
+      //     message: "保存失败",
+      //   });
+      },
+      handleAvatarSuccess(res, file) {
+         this.imageUrl = URL.createObjectURL(file.raw);
+         this.$message.success("上传成功！刷新页面查看！")
+      },
+      beforeAvatarUpload(file) {
+          // 这里我也准备只接受jpg的格式储存所以我就直接用了官方提供的代码
+          const isJPG = file.type === 'image/jpeg';
+          const isLt2M = file.size / 1024 / 1024 < 2;
+          
+          if (!isJPG) {
+              this.$message.error('上传头像图片只能是 JPG 格式!');
+          }
+          if (!isLt2M) {
+              this.$message.error('上传头像图片大小不能超过 2MB!');
+          }
+          console.log(file)
+          return isJPG && isLt2M;
       }
-  }
+    }
 })
 </script>

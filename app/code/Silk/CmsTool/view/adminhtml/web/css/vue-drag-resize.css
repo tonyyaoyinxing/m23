@@ -3,8 +3,8 @@
 .draw-main {
     margin: 0;
     box-sizing: border-box;
-    width: 1280px;
-    height: 480px;
+    width: 960px;
+    height: 640px;
     position: relative;
     font-family: 'Lato', sans-serif;
 }
@@ -88,4 +88,14 @@
 .content-container{
     display: block;
     position: relative;
+}
+.float-button-edit{
+    top: -25px;
+    right: 0px;
+    position: absolute;
+}
+.float-button-remove{
+    top: -25px;
+    right: 50px;
+    position: absolute;
 }

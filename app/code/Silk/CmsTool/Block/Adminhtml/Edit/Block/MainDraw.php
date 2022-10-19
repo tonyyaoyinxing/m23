@@ -21,6 +21,7 @@ class MainDraw extends Template implements TabInterface
      */
     private $vueProvider;
 
+
     public function __construct(
         Template\Context $context,
         Registry $registry,
@@ -97,6 +98,7 @@ class MainDraw extends Template implements TabInterface
         $element['left'] = 10;
         $element['top'] = 10;
         $element['isActive'] = false;
+        $element['type'] = '3';
         $data[] = $element;
         return $data;
     }

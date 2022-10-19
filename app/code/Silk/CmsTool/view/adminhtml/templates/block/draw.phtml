@@ -1,7 +1,7 @@
 
 <div id="app">
-  <el-container style="height: 500px; border: 1px solid #eee">
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+  <el-container style="height: 1000px; border: 1px solid #eee">
+    <el-aside width="150px" style="background-color: rgb(238, 241, 246)">
       <el-menu>
         <el-submenu index="1">
           <template slot="title"><i class="el-icon-message"></i>图片</template>
@@ -58,9 +58,23 @@
                               v-on:deactivated="deactivateEv(index)"
                               v-on:dragging="changePosition($event, index)"
                               v-on:resizing="changeSize($event, index)"
+                              :type="rect.type"
+                              :imageUrl="rect.imageUrl"
               >
                   <div class="filler" :style="{backgroundColor:rect.color}">
-                    <el-button type="primary" icon="el-icon-edit" size="mini" round></el-button><el-button type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
+                    <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" round></el-button><el-button class="float-button-remove" type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
+                    <template v-if="rect.type === '1'">
+                      <img :src="rect.imageUrl" alt="" width="100%" height="100%">
+                    </template>
+                    <template v-else-if="rect.type === '2'">
+                      <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
+                    </template>
+                    <template v-else-if="rect.type === '3'">
+                      <a><p>test</p></a>
+                    </template>
+                    <template v-else>
+                    <a><p>test</p></a>
+                    </template>
                   </div>
               </vue-drag-resize>
           </div>
@@ -84,10 +98,14 @@
           <el-input v-model="questionForm.height" />
         </el-form-item>
         <el-upload
-          action="#"
+          action="<?= $block->getImageUploadUrl() ?>"
+          :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
           list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove">
+          :auto-upload="true"
+          :on-success="uploadSuccess" 
+          :on-remove="removeSuccess"
+          :before-upload="beforeUpload"   
+          :class="{ hideUpload: !showUpload }" >
           <i class="el-icon-plus"></i>
         </el-upload>
         <el-dialog :visible.sync="dialogVisible">
@@ -115,8 +133,12 @@ new Vue({
         questionForm: {
           width: "",
           height: "",
+          imageUrl:"",
         },
         dialogFormVisible: false,
+        dialogImageUrl: '',
+        dialogVisible: false,
+        showUpload: true,
     }
   },
   mounted() {
@@ -182,13 +204,6 @@ new Vue({
               };
               break
             case 2:
-              // this.elements.push({
-              //       width: 100,
-              //       height: 100,
-              //       left: 10,
-              //       top: 10,
-              //       isActive: true
-              //   });
               this.questionForm = {
                 type:"2",
                 width: "",
@@ -210,9 +225,36 @@ new Vue({
         this.dialogFormVisible = true;
       },
       //添加增加题目
-      async createData() {
+      createData() {
         const params = this.questionForm;
-        alert(JSON.stringify(params))
+        console.log(this.imageUrl);
+        switch(params.type){
+            case '1':
+              this.elements.push({
+                  width: params.width,
+                  height: params.height,
+                  left: 10,
+                  top: 10,
+                  isActive: true,
+                  imageUrl:this.imageUrl,
+                  type:params.type,
+              });
+              break;
+            case '2':
+              this.elements.push({
+                  width: params.width,
+                  height: params.height,
+                  left: 10,
+                  top: 10,
+                  isActive: true,
+                  imageUrl:this.imageUrl,
+                  type:params.type,
+              });
+              break;
+            default:
+              break;
+        }
+        this.dialogFormVisible = false;
 
         //如果需要调用接口，请打开注释
       //   const res = await saveSubject(params);
@@ -231,11 +273,14 @@ new Vue({
       //     message: "保存失败",
       //   });
       },
-      handleAvatarSuccess(res, file) {
-         this.imageUrl = URL.createObjectURL(file.raw);
-         this.$message.success("上传成功！刷新页面查看！")
+      toggleUpload() {
+        this.showUpload = !this.showUpload
       },
-      beforeAvatarUpload(file) {
+      uploadSuccess(response, file, fileList) {
+         console.log(response);
+         this.imageUrl = response;
+      },
+      beforeUpload(file) {
           // 这里我也准备只接受jpg的格式储存所以我就直接用了官方提供的代码
           const isJPG = file.type === 'image/jpeg';
           const isLt2M = file.size / 1024 / 1024 < 2;
@@ -246,8 +291,14 @@ new Vue({
           if (!isLt2M) {
               this.$message.error('上传头像图片大小不能超过 2MB!');
           }
-          console.log(file)
           return isJPG && isLt2M;
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
       }
     }
 })

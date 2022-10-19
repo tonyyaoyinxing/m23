@@ -65,10 +65,10 @@ class UploadImage extends Action implements HttpPostActionInterface,CsrfAwareAct
             $this->logger->critical($exception);
             $jsonResult->setHttpResponseCode(WebapiException::HTTP_INTERNAL_ERROR);
 
-            $result = ['error' => __('Menu node image upload failed.')];
+            $result = ['error' => __('image upload failed.')];
         }
 
-        $jsonResult->setData($result);
+        $jsonResult->setData($result['url']);
 
         return $jsonResult;
     }

@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 
 class File
 {
-    const UPLOAD_FILE_ID = 'image';
+    const UPLOAD_FILE_ID = 'file';
     const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png'];
     const PATH = 'silk/cmstool/image';
 

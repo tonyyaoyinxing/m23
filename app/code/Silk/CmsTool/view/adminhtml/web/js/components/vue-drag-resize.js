@@ -161,6 +161,14 @@ var vueDragResize = {
             required: false,
             default: '',
         },
+        type: {
+            type: String,
+            default: '1',
+        },
+        imageUrl: {
+            type: String,
+            default: null,
+        },
     },
 
     data() {

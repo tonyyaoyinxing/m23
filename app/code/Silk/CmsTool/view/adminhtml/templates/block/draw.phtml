@@ -28,6 +28,10 @@
             <el-menu-item index="3-1" @click="addElement(5)" @click="openTime">倒计时</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
+        <el-menu-item index="4">
+          <i class="el-icon-setting"></i>
+          <span slot="title">保存</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     
@@ -60,9 +64,13 @@
                               v-on:resizing="changeSize($event, index)"
                               :type="rect.type"
                               :imageUrl="rect.imageUrl"
+                              :headline="rect.headline"
               >
                   <div class="filler" :style="{backgroundColor:rect.color}">
-                    <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" round></el-button><el-button class="float-button-remove" type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
+                    <el-button class="float-button-bottom" type="primary" icon="el-icon-bottom" size="mini" @click="toBottom(index)" round></el-button>
+                    <el-button class="float-button-top" type="primary" icon="el-icon-top" size="mini" @click="toTop(index)" round></el-button>
+                    <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" @click="editElement(index)" round></el-button>
+                    <el-button class="float-button-remove" type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
                     <template v-if="rect.type === '1'">
                       <img :src="rect.imageUrl" alt="" width="100%" height="100%">
                     </template>
@@ -70,10 +78,10 @@
                       <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
                     </template>
                     <template v-else-if="rect.type === '3'">
-                      <a><p>test</p></a>
+                      <p>{{rect.headline}}</p>
                     </template>
                     <template v-else>
-                    <a><p>test</p></a>
+                      <p>{{rect.headline}}</p>
                     </template>
                   </div>
               </vue-drag-resize>
@@ -97,20 +105,54 @@
         <el-form-item label="高度">
           <el-input v-model="questionForm.height" />
         </el-form-item>
-        <el-upload
-          action="<?= $block->getImageUploadUrl() ?>"
-          :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
-          list-type="picture-card"
-          :auto-upload="true"
-          :on-success="uploadSuccess" 
-          :on-remove="removeSuccess"
-          :before-upload="beforeUpload"   
-          :class="{ hideUpload: !showUpload }" >
-          <i class="el-icon-plus"></i>
-        </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="dialogImageUrl" alt="">
-        </el-dialog>
+        <template v-if="questionForm.type === '1'">
+          <el-upload
+            action="<?= $block->getImageUploadUrl() ?>"
+            :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
+            list-type="picture-card"
+            :auto-upload="true"
+            :on-success="uploadSuccess" 
+            :on-remove="removeSuccess"
+            :before-upload="beforeUpload"   
+            :class="{ hideUpload: !showUpload }" >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </template>
+        <template v-else-if="questionForm.type === '2'">
+          <el-upload
+              action="<?= $block->getImageUploadUrl() ?>"
+              :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
+              list-type="picture-card"
+              :auto-upload="true"
+              :on-success="uploadSuccess" 
+              :on-remove="removeSuccess"
+              :before-upload="beforeUpload"   
+              :class="{ hideUpload: !showUpload }" >
+              <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </template>
+        <template v-else-if="questionForm.type === '3'">
+          <el-form-item label="文本">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+        </template>
+        <template v-else-if="questionForm.type === '4'">
+          <el-form-item label="文本">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-form-item label="文本">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+        </template>
+        
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
@@ -181,16 +223,12 @@ new Vue({
           // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
       },
       handleOpen(key, keyPath) {
-        console.log(key, keyPath);
+        //console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
-        console.log(key, keyPath);
+        //console.log(key, keyPath);
       },
-      addElement(type) {
-          
-          
-      },
-      removeElement(elements,index){
+      removeElement(index){
         this.elements.splice(index, 1);
         //elements.splice(elements.indexOf(element), 1);
       },
@@ -217,6 +255,57 @@ new Vue({
                 height: "",
               };
               break
+            case 4:
+              this.questionForm = {
+                type:"4",
+                width: "",
+                height: "",
+                headline:""
+              };
+              break
+            default:
+                //这里是没有找到对应的值处理
+              break
+        }
+        
+        this.dialogFormVisible = true;
+      },
+      editElement(index) {
+        console.log(this.elements[index].width);
+        switch(this.elements[index].type){
+            case 1:
+              this.questionForm = {
+                index:this.elements[index].index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+              };
+              break
+            case 2:
+              this.questionForm = {
+                index:this.elements[index].index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+              };
+                break
+            case 3:
+              this.questionForm = {
+                index:this.elements[index].index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+              };
+              break
+            case 4:
+              this.questionForm = {
+                index:this.elements[index].index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                headline:this.elements[index].headline,
+              };
+              break
             default:
                 //这里是没有找到对应的值处理
               break
@@ -227,33 +316,90 @@ new Vue({
       //添加增加题目
       createData() {
         const params = this.questionForm;
-        console.log(this.imageUrl);
-        switch(params.type){
-            case '1':
-              this.elements.push({
-                  width: params.width,
-                  height: params.height,
-                  left: 10,
-                  top: 10,
-                  isActive: true,
-                  imageUrl:this.imageUrl,
-                  type:params.type,
-              });
-              break;
-            case '2':
-              this.elements.push({
-                  width: params.width,
-                  height: params.height,
-                  left: 10,
-                  top: 10,
-                  isActive: true,
-                  imageUrl:this.imageUrl,
-                  type:params.type,
-              });
-              break;
-            default:
-              break;
+        params.width = parseInt(params.width); 
+        params.height = parseInt(params.height);
+        params.index = parseInt(params.index);  
+        if(params.index)
+        {
+          switch(params.type){
+              case '1':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].imageUrl = this.imageUrl;
+                break;
+              case '2':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].imageUrl = this.imageUrl;
+                break;
+              case '3':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].headline = params.headline;
+                break;
+              case '4':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].headline = params.headline;
+                break;
+              default:
+                break;
+          }
+          Vue.set(this.elements, index, this.elements[index]);
+        }else{
+          switch(params.type){
+              case '1':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    imageUrl:this.imageUrl,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '2':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    imageUrl:this.imageUrl,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '3':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '4':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    headline:params.headline,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              default:
+                break;
+          }
         }
+        
         this.dialogFormVisible = false;
 
         //如果需要调用接口，请打开注释
@@ -286,10 +432,10 @@ new Vue({
           const isLt2M = file.size / 1024 / 1024 < 2;
           
           if (!isJPG) {
-              this.$message.error('上传头像图片只能是 JPG 格式!');
+              this.$message.error('上传图片只能是 JPG 格式!');
           }
           if (!isLt2M) {
-              this.$message.error('上传头像图片大小不能超过 2MB!');
+              this.$message.error('上传图片大小不能超过 2MB!');
           }
           return isJPG && isLt2M;
       },
@@ -299,6 +445,14 @@ new Vue({
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
         this.dialogVisible = true;
+      },
+      toBottom(index){
+        this.elements[index].zIndex = this.elements[index].zIndex-1;
+        Vue.set(this.elements, index, this.elements[index]);
+      },
+      toTop(index){
+        this.elements[index].zIndex = this.elements[index].zIndex+1;
+        Vue.set(this.elements, index, this.elements[index]);
       }
     }
 })

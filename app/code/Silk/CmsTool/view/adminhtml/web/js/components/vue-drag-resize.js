@@ -169,6 +169,10 @@ var vueDragResize = {
             type: String,
             default: null,
         },
+        headline: {
+            type: String,
+            default: null,
+        },
     },
 
     data() {

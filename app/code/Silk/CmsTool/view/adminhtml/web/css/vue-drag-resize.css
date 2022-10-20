@@ -89,13 +89,29 @@
     display: block;
     position: relative;
 }
-.float-button-edit{
-    top: -25px;
+.float-button-remove{
+    top: -18px;
     right: 0px;
     position: absolute;
+    padding: 0px 0px !important;
 }
-.float-button-remove{
-    top: -25px;
-    right: 50px;
+.float-button-edit{
+    top: -18px;
+    right: 28px;
     position: absolute;
+    padding: 0px 0px !important;
 }
+.float-button-top{
+    top: -18px;
+    right: 56px;
+    position: absolute;
+    padding: 0px 0px !important;
+}
+.float-button-bottom{
+    top: -18px;
+    right: 84px;
+    position: absolute;
+    padding: 0px 0px !important;
+}
+
+

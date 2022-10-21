@@ -173,6 +173,26 @@ var vueDragResize = {
             type: String,
             default: null,
         },
+        fontPosition: {
+            type: String,
+            default: null,
+        },
+        fontSize: {
+            type: String,
+            default: null,
+        },
+        fontStyle: {
+            type: String,
+            default: null,
+        },
+        fontWeight: {
+            type: String,
+            default: null,
+        },
+        fontColor: {
+            type: String,
+            default: null,
+        },
     },
 
     data() {

@@ -1,0 +1,592 @@
+<div id="app">
+  <el-container style="height: 1000px; border: 1px solid #eee">
+    <el-aside width="150px" style="background-color: rgb(238, 241, 246)">
+      <el-menu v-for="(menu, index) in menus">
+        <el-submenu index="{index}">
+          <template slot="title"><i class="{menu.class}"></i>{{menu.title}}</template>
+          <el-menu-item-group v-for="(cmenu, cindex) in menu.items">
+            <el-menu-item index="{index}-{cindex}" @click="addElement(index)">{{cmenu.title}}</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
+      <el-menu>
+        <el-menu-item index="20" @click="saveElement()">
+          <i class="el-icon-folder-checked"></i>
+          <span slot="title">保存</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
+    <el-container>
+      <el-main>
+        <div class="draw-main">
+          <div class="list" id="list" :isDraggable="true">
+              <vue-drag-resize v-for="(rect, index) in elements"
+                              :key="index" 
+                              :w="rect.width"
+                              :h="rect.height"
+                              :x="rect.left"
+                              :y="rect.top"
+                              :parentW="listWidth"
+                              :parentH="listHeight"
+                              :axis="rect.axis"
+                              :isActive="rect.active"
+                              :minw="rect.minw"
+                              :minh="rect.minh"
+                              :isDraggable="rect.draggable"
+                              :isResizable="rect.resizable"
+                              :parentLimitation="true"
+                              :snapToGrid="rect.snapToGrid"
+                              :aspectRatio="rect.aspectRatio"
+                              :z="rect.zIndex"
+                              :contentClass="rect.class"
+                              v-on:activated="activateEv(index)"
+                              v-on:deactivated="deactivateEv(index)"
+                              v-on:dragging="changePosition($event, index)"
+                              v-on:resizing="changeSize($event, index)"
+                              :type="rect.type"
+                              :imageUrl="rect.imageUrl"
+                              :headline="rect.headline"
+              >
+                  <div class="filler" :style="{backgroundColor:rect.color}">
+                    <el-button class="float-button-bottom" type="primary" icon="el-icon-bottom" size="mini" @click="toBottom(index)" round></el-button>
+                    <el-button class="float-button-top" type="primary" icon="el-icon-top" size="mini" @click="toTop(index)" round></el-button>
+                    <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" @click="editElement(index)" round></el-button>
+                    <el-button class="float-button-remove" type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
+                    <template v-if="rect.type === '1'">
+                      <img :src="rect.imageUrl" alt="" width="100%" height="100%">
+                    </template>
+                    <template v-else-if="rect.type === '2'">
+                      <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
+                    </template>
+                    <template v-else-if="rect.type === '3'">
+                      <p class="{rect.class}">{{rect.headline}}</p>
+                    </template>
+                    <template v-else-if="rect.type === '4'">
+                      <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
+                    </template>
+                    <template v-else>
+                      <p class="{rect.class}">{{rect.headline}}</p>
+                    </template>
+                  </div>
+              </vue-drag-resize>
+          </div>
+        </div>
+      </el-main>
+    </el-container>
+  </el-container>
+  <div class="tab-container">
+    <el-dialog :visible.sync="dialogFormVisible" @close="closeDialog">
+      <el-form
+        :model="questionForm"
+        ref="dataForm"
+        label-position="left"
+        label-width="90px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item label="宽度">
+          <el-input v-model="questionForm.width" />
+        </el-form-item>
+        <el-form-item label="高度">
+          <el-input v-model="questionForm.height" />
+        </el-form-item>
+        <template v-if="questionForm.type === '1'">
+          <el-upload
+            action="<?= $block->getImageUploadUrl() ?>"
+            :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
+            list-type="picture-card"
+            :auto-upload="true"
+            :on-success="uploadSuccess" 
+            :on-remove="removeSuccess"
+            :before-upload="beforeUpload"   
+            :class="{ hideUpload: !showUpload }" >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </template>
+        <template v-else-if="questionForm.type === '2'">
+          <el-upload
+              action="<?= $block->getImageUploadUrl() ?>"
+              :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
+              list-type="picture-card"
+              :auto-upload="true"
+              :on-success="uploadSuccess" 
+              :on-remove="removeSuccess"
+              :before-upload="beforeUpload"   
+              :class="{ hideUpload: !showUpload }" >
+              <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+        </template>
+        <template v-else-if="questionForm.type === '3'">
+          <el-form-item label="文本">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+        </template>
+        <template v-else-if="questionForm.type === '4'">
+          <el-form-item label="文本">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+          <el-form-item label="文本位置">
+            <el-select
+              v-model="questionForm.fontPosition"
+              class="filter-item"
+              placeholder="选择文本位置"
+            >
+              <el-option
+                v-for="item in fontPosition"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="字体大小">
+            <el-select
+              v-model="questionForm.fontSize"
+              class="filter-item"
+              placeholder="选择字体大小"
+            >
+              <el-option
+                v-for="item in fontSize"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="字体颜色">
+            <el-color-picker
+              v-model="questionForm.fontColor"
+              show-alpha
+              :predefine="predefineColors">
+            </el-color-picker>
+          </el-form-item>
+          <el-form-item label="加粗效果">
+            <el-select
+              v-model="questionForm.fontWeight"
+              class="filter-item"
+              placeholder="选择加粗效果"
+            >
+              <el-option
+                v-for="item in fontWeight"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="斜体">
+            <el-select
+              v-model="questionForm.fontStyle"
+              class="filter-item"
+              placeholder="选择加粗效果"
+            >
+              <el-option
+                v-for="item in fontStyle"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-form-item label="文本">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+        </template>
+        
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click=" createData(questionForm.index) ">确定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</div>
+<script>
+new Vue({
+  el: '#app',
+  data: function() {
+    return {
+        visible: false,
+        isCollapse: true,
+        listWidth: 200,
+        listHeight: 200,
+        elements:<?= json_encode($block->renderElements()) ?>,
+        menus:<?= json_encode($block->renderMenus()) ?>,
+        input: "",
+        questionForm: {
+          width: "",
+          height: "",
+          imageUrl:"",
+        },
+        dialogFormVisible: false,
+        dialogImageUrl: '',
+        dialogVisible: false,
+        showUpload: true,
+        fontPosition: [
+          { label: "居中", key: "center" },
+          { label: "居左", key: "left" },
+          { label: "居右", key: "right" },
+        ],
+        fontWeight: [
+          { label: "强加粗", key: "700" },
+          { label: "加粗", key: "500" },
+          { label: "正常", key: "300" },
+        ],
+        fontStyle: [
+          { label: "正常", key: "normal" },
+          { label: "斜体", key: "italic" },
+          { label: "段落斜体", key: "oblique" },
+        ],
+        fontSize: <?= json_encode($block->getFontSize()) ?>,
+        uploadFiles: [
+
+        ],
+        predefineColors: [
+          '#ff4500',
+          '#ff8c00',
+          '#ffd700',
+          '#90ee90',
+          '#00ced1',
+          '#1e90ff',
+          '#c71585',
+          '#FF0000'
+        ],
+    }
+  },
+  mounted() {
+      let listEl = document.getElementById('list');
+      this.listWidth = listEl.clientWidth;
+      this.listHeight = listEl.clientHeight;
+      window.addEventListener('resize', ()=>{
+          this.listWidth = listEl.clientWidth;
+          this.listHeight = listEl.clientHeight;
+      })
+  },
+
+  computed: {
+      rects() {
+          //return this.$store.state.rect.rects
+      }
+  },
+
+  methods: {
+      activateEv(index) {
+          //this.$store.dispatch('rect/setActive', {id: index});
+      },
+
+      deactivateEv(index) {
+          //this.$store.dispatch('rect/unsetActive', {id: index});
+      },
+
+      changePosition(newRect, index) {
+            this.elements[index].top = newRect.top;
+            this.elements[index].left = newRect.left;
+            this.elements[index].width = newRect.width;
+            this.elements[index].height = newRect.height;
+            Vue.set(this.elements, index, this.elements[index]);
+      },
+
+      changeSize(newRect, index) {
+            this.elements[index].top = newRect.top;
+            this.elements[index].left = newRect.left;
+            this.elements[index].width = newRect.width;
+            this.elements[index].height = newRect.height;
+            Vue.set(this.elements, index, this.elements[index]);
+      },
+      handleOpen(key, keyPath) {
+        //console.log(key, keyPath);
+      },
+      handleClose(key, keyPath) {
+        //console.log(key, keyPath);
+      },
+      removeElement(index){
+        this.elements.splice(index, 1);
+        //elements.splice(elements.indexOf(element), 1);
+      },
+      addElement(type) {
+        switch(type&ctype){
+            case 1&1:
+              this.questionForm = {
+                type:"1",
+                width: "",
+                height: "",
+              };
+              break
+            case 1&2:
+              this.questionForm = {
+                type:"2",
+                width: "",
+                height: "",
+              };
+                break
+            case 3:
+              this.questionForm = {
+                type:"3",
+                width: "",
+                height: "",
+              };
+              break
+            case 4:
+              this.questionForm = {
+                type:"4",
+                width: "",
+                height: "",
+                headline:""
+              };
+              break
+            default:
+                //这里是没有找到对应的值处理
+              break
+        }
+        
+        this.dialogFormVisible = true;
+      },
+      editElement(index) {
+        switch(this.elements[index].type){
+            case 1:
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+              };
+              break
+            case 2:
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+              };
+                break
+            case 3:
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+              };
+              break
+            case 4:
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                headline:this.elements[index].headline,
+                fontPosition:this.elements[index].fontPosition,
+                fontWeight:this.elements[index].fontWeight,
+                fontStyle:this.elements[index].fontStyle,
+                fontSize:this.elements[index].fontSize,
+                fontColor:this.elements[index].fontColor,
+              };
+              break
+            default:
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                headline:this.elements[index].headline,
+                fontPosition:this.elements[index].fontPosition,
+                fontWeight:this.elements[index].fontWeight,
+                fontStyle:this.elements[index].fontStyle,
+                fontSize:this.elements[index].fontSize,
+                fontColor:this.elements[index].fontColor,
+              };
+              break
+        }
+        this.dialogFormVisible = true;
+      },
+      //添加增加题目
+      createData(index) {
+        const params = this.questionForm;
+        params.width = parseInt(params.width); 
+        params.height = parseInt(params.height);
+        if(typeof(index) === 'undefined'||index === null)
+        {
+          switch(params.type){
+              case '1':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    imageUrl:this.imageUrl,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '2':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    imageUrl:this.imageUrl,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '3':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '4':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    headline:params.headline,
+                    type:params.type,
+                    zIndex:1,
+                    fontPosition:params.fontPosition,
+                    fontWeight:params.fontWeight,
+                    fontStyle:params.fontStyle,
+                    fontSize:params.fontSize,
+                    fontColor:params.fontColor,
+                });
+                break;
+              default:
+                break;
+          }
+        }else{
+          switch(params.type){
+              case '1':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].imageUrl = this.imageUrl;
+                break;
+              case '2':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].imageUrl = this.imageUrl;
+                break;
+              case '3':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].headline = params.headline;
+                break;
+              case '4':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].headline = params.headline;
+                this.elements[index].fontPosition = params.fontPosition;
+                this.elements[index].fontWeight = params.fontWeight;
+                this.elements[index].fontStyle = params.fontStyle;
+                this.elements[index].fontSize = params.fontSize;
+                this.elements[index].fontColor = params.fontColor;
+                break;
+              default:
+                break;
+          }
+          Vue.set(this.elements, index, this.elements[index]);
+        }
+        this.dialogFormVisible = false;
+      },
+      toggleUpload() {
+        this.showUpload = !this.showUpload
+      },
+      uploadSuccess(response, file, fileList) {
+         console.log(response);
+         this.imageUrl = response;
+      },
+      beforeUpload(file) {
+          // 这里我也准备只接受jpg的格式储存所以我就直接用了官方提供的代码
+          const isJPG = file.type === 'image/jpeg';
+          const isLt2M = file.size / 1024 / 1024 < 2;
+          
+          if (!isJPG) {
+              this.$message.error('上传图片只能是 JPG 格式!');
+          }
+          if (!isLt2M) {
+              this.$message.error('上传图片大小不能超过 2MB!');
+          }
+          return isJPG && isLt2M;
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+      },
+      toBottom(index){
+        this.elements[index].zIndex = this.elements[index].zIndex-1;
+        Vue.set(this.elements, index, this.elements[index]);
+      },
+      toTop(index){
+        this.elements[index].zIndex = this.elements[index].zIndex+1;
+        Vue.set(this.elements, index, this.elements[index]);
+      },
+      closeDialog(){
+
+      },
+      removeSuccess(){
+        
+      },
+      async saveElement(){
+        var elementsArr = Object.keys(this.elements).map(key => {
+            //console.log(key); //为每个键名
+          var data = {};
+          data.zIndex = this.elements[key].zIndex;
+          data.type = this.elements[key].type;
+          data.imageUrl = this.elements[key].imageUrl;
+          data.headline = this.elements[key].headline;
+          data.fontPosition = this.elements[key].fontPosition;
+          data.fontSize = this.elements[key].fontSize;
+          data.fontStyle = this.elements[key].fontStyle;
+          data.fontWeight = this.elements[key].fontWeight;
+          data.fontColor = this.elements[key].fontColor;
+          data.width = this.elements[key].width;
+          data.height = this.elements[key].height;
+          data.left = this.elements[key].left;
+          data.top = this.elements[key].top;
+          data.isActive = this.elements[key].isActive;
+          return data;  //把每个对象返回出去生成一个新的数组中相当于0:{id:1}
+        });
+        let formdata = new FormData();
+        formdata.append('data',JSON.stringify(elementsArr));
+        formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+        formdata.append('block_type_id','<?php echo $block->getBlockTypeId() ?>');
+        console.log(elementsArr);
+        let message = {};
+        let res = await axios.post('<?= $block->getSaveUrl()?>', formdata)
+        .then(function (response) {
+            console.log(response);
+            message = {
+              type: "success",
+              message: "保存成功",
+            };
+        })
+        .catch(function (error) {
+            console.log(error);
+            message = {
+              type: "error",
+              message: "保存失败",
+            };
+        });
+        console.log(message);
+        this.$message(message);
+      }
+    }
+})
+</script>

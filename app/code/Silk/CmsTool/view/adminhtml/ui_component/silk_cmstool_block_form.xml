@@ -11,9 +11,9 @@
     <settings>
         <buttons>
             <button name="back" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Back"/>
-            <button name="delete" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Delete"/>
+            <button name="delete" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Block\Delete"/>
             <button name="reset" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Reset"/>
-            <button name="save" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Save"/>
+            <button name="save" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Block\Save"/>
             <button name="draw" class="Silk\CmsTool\Block\Adminhtml\Edit\Button\Preview"/>
         </buttons>
         <namespace>silk_cmstool_block_form</namespace>

@@ -21,3 +21,6 @@
     height: 178px;
     display: block;
 }
+.hideUpload > div {
+    display: none;
+}

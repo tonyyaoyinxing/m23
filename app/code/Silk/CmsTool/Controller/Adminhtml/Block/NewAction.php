@@ -9,19 +9,8 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface as HttpGetActionInterface;
 
-class NewAction extends Action implements HttpGetActionInterface
+class NewAction extends AbstractBlock implements HttpGetActionInterface
 {
-    protected $resultForwardFactory;
-
-    public function __construct(
-        Context $context,
-        \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
-    )
-    {
-        $this->resultForwardFactory = $resultForwardFactory;
-        parent::__construct($context);
-    }
-
     /**
      * Create new customer action
      *

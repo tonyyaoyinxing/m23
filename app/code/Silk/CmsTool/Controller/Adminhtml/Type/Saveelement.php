@@ -1,11 +1,10 @@
 <?php
 
-namespace Silk\CmsTool\Controller\Adminhtml\Block;
+namespace Silk\CmsTool\Controller\Adminhtml\Type;
 
-use Silk\CmsTool\Api\Data\BlockInterface;
-use Silk\CmsTool\Controller\Adminhtml\Block\AbstractBlock;
+use Silk\CmsTool\Controller\Adminhtml\Type\AbstractType;
 
-class Save extends AbstractBlock
+class Saveelement extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -13,17 +12,17 @@ class Save extends AbstractBlock
     public function execute()
     {
         $data = $this->getRequest()->getParam('data');
-        $blockId = $this->getRequest()->getParam('block_id');
+        $blockTypeId = $this->getRequest()->getParam('block_type_id');
         $jsonResult = $this->jsonResultFactory->create();
         try {
-            if ($blockId) {
-                /** @var  \Silk\CmsTool\Model\Module $model */
-                $model = $this->blockFactory->load($blockId);
+            if ($blockTypeId) {
+                /** @var  \Silk\CmsTool\Model\CmstoolBlockType $model */
+                $model = $this->typeFactory->create();
+                $model->load($blockTypeId);
             } else {
-                $model = $this->blockFactory->create();
-            }   
-            $model->setData($data);
-            $model->setData('block_json',$blockId);
+                $model = $this->typeFactory->create();
+            } 
+            $model->setData('type_json',$data);
             $model->save();
         } catch (\Magento\Framework\Exception\AlreadyExistsException $e) {
             $jsonResult->setData(['code'=>500,'message'=>'failed']);

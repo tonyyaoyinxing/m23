@@ -4,7 +4,7 @@ namespace Silk\CmsTool\Controller\Adminhtml\Block;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\App\Action;
-
+use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 abstract class AbstractBlock extends Action
 {
     const ADMIN_RESOURCE = 'Silk_CmsTool::block_manage';
@@ -25,6 +25,11 @@ abstract class AbstractBlock extends Action
     protected $blockFactory;
 
     /**
+     * @var JsonResultFactory
+     */
+    protected $jsonResultFactory;
+
+    /**
      * @var \Magento\Framework\Registry
      */
     protected $registry;
@@ -34,12 +39,14 @@ abstract class AbstractBlock extends Action
         \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory,
         \Silk\CmsTool\Model\Api\BlockRepository $blockRepository,
         \Silk\CmsTool\Model\CmstoolBlockFactory $blockFactory,
+        JsonResultFactory $jsonResultFactory,
         \Magento\Framework\Registry $registry
     ) {
         parent::__construct($context);
         $this->resultForwardFactory = $resultForwardFactory;
         $this->blockRepository = $blockRepository;
         $this->blockFactory = $blockFactory;
+        $this->jsonResultFactory = $jsonResultFactory;
         $this->registry = $registry;
     }
 

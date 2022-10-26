@@ -1,6 +1,26 @@
 <?php
+/** @var \Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw $block */
+
+$vueComponents = $block->getVueComponents();
 
 ?>
+<div id="cmstool-block">
+    <cmstool-block :config="config" :elements="elements">
+    </cmstool-block>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "blockElement": {
+                "vueComponents": <?= json_encode($vueComponents) ?>,
+                "data": {
+                    "elements"  : <?= json_encode($block->renderElement()) ?>
+                }
+            }
+        }
+    }
+</script>
 <button id="add-block" style="display: none;"></button>
 <div id="modal-content">
     <div class="modal-inner-content">
@@ -10,6 +30,8 @@
         <input class="admin__control-text" type="text" id="height" name="height" maxlength="255">
     </div>
 </div>
+
+
 <script>
     require(
         [
@@ -33,6 +55,8 @@
                     text: $.mage.__('Create'),
                     class: 'modal-add',
                     click: function (){
+                        console.log($('#width').val());
+                        console.log($('#height').val());
                         $("#add-block").click();
                         this.closeModal();
                     }
@@ -47,6 +71,7 @@
                 "windowName": "Draw Block",
                 "width": $('#width').val(),
                 "height": $('#height').val(),
+                "centerScreen": true,
                 "left": 0,
                 "top": 0,
                 "resizable": 1,

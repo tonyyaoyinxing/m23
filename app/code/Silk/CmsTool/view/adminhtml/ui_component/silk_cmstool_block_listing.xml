@@ -196,7 +196,7 @@
                 </item>
             </argument>
         </column>
-        <actionsColumn name="baseactions" class="Silk\CmsTool\Ui\Component\Listing\Column\BaseActions">
+        <actionsColumn name="baseactions" class="Silk\CmsTool\Ui\Component\Listing\Column\BlockActions">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="urlEntityParamName" xsi:type="string">block_id</item>

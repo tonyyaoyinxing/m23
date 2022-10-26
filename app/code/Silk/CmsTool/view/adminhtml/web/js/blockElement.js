@@ -6,10 +6,9 @@ define([
     "uiRegistry",
     "vueDragResize",
     "vue!Silk_CmsTool/vue/app",
-    "vue!Silk_CmsTool/vue/element-type/c-button",
 ], function(Vue, Vddl, vueSelect, vueTreeselect, registry,vueDragResize) {
 
-    return function(config, element) {
+    return function(config) {
         var dependencies = [];
         if (config.vueComponents && config.vueComponents.length > 0) {
             dependencies = config.vueComponents;

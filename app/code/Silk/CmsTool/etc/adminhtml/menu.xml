@@ -4,5 +4,6 @@
         <add id="Silk_CmsTool::cms_manage" title="Cms Manage" module="Silk_CmsTool" sortOrder="10" resource="Silk_CmsTool::cms_manage"/>
         <add id="Silk_CmsTool::page_manage" title="Page List" module="Silk_CmsTool" sortOrder="10" action="cmstool/page/index" resource="Silk_CmsTool::page_manage" parent="Silk_CmsTool::cms_manage"/>
         <add id="Silk_CmsTool::block_manage" title="Block List" module="Silk_CmsTool" sortOrder="20" action="cmstool/block/index" resource="Silk_CmsTool::block_manage" parent="Silk_CmsTool::cms_manage"/>
+        <add id="Silk_CmsTool::block_type_manage" title="Block Type List" module="Silk_CmsTool" sortOrder="30" action="cmstool/type/index" resource="Silk_CmsTool::type_manage" parent="Silk_CmsTool::cms_manage"/>
     </menu>
 </config>

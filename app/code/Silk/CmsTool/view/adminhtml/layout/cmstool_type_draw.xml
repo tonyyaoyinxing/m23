@@ -22,7 +22,7 @@
         <referenceContainer name="footer-container" remove="true" />
         <referenceContainer name="after.body.start" remove="true"/>
         <container name="content">
-            <block class="Silk\CmsTool\Block\Adminhtml\Edit\Block\BlockDraw" name="silk_cmstool_block_draw" template="Silk_CmsTool::block/draw.phtml"/>
+            <block class="Silk\CmsTool\Block\Adminhtml\Edit\BlockType\TypeDraw" name="silk_cmstool_block_type_draw" template="Silk_CmsTool::type/draw.phtml"/>
         </container>
     </body>
 </page>

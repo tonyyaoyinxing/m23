@@ -56,7 +56,7 @@ class ReactInjectPlugin extends Renderer
         $store = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
         $area = $state->getAreaCode();
         $pageFilter = ['checkout', 'customer'];
-        $actionFilter = ['cmstool_block_draw'];
+        $actionFilter = ['cmstool_block_draw','cmstool_type_draw'];
 
         $request = $objectManager->get(\Magento\Framework\App\Request\Http::class);
         $actionName = $request->getFullActionName();

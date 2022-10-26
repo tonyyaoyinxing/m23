@@ -12,10 +12,17 @@
             <argument name="resourceModel" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlock</argument>
         </arguments>
     </virtualType>
+    <virtualType name="Silk\CmsTool\Model\ResourceModel\CmstoolBlock\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">cmstool_block_type</argument>
+            <argument name="resourceModel" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlockType</argument>
+        </arguments>
+    </virtualType>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
                 <item name="silk_cmstool_block_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlock\Collection</item>
+                <item name="silk_cmstool_block_type_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlock\Collection</item>
                 <item name="silk_cmstool_page_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolPage\Collection</item>
             </argument>
         </arguments>
@@ -28,4 +35,5 @@
         </arguments>
     </type>
     <preference for="Magento\Framework\View\Page\Config\Renderer" type="Silk\CmsTool\Plugins\Renderer\ReactInjectPlugin"/>
+    <preference for="Silk\CmsTool\Api\TypeRepositoryInterface" type="Silk\CmsTool\Model\Api\TypeRepository"/>
 </config>

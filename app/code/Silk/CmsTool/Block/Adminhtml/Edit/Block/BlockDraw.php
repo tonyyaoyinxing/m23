@@ -7,9 +7,10 @@ use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Framework\Registry;
 use Silk\CmsTool\Model\VueProvider;
 
-class MainDraw extends Template implements TabInterface
+class BlockDraw extends Template implements TabInterface
 {
     const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
+    const SAVE_URL = 'cmstool/block/save';
     protected $_template = 'block/draw.phtml';
     /**
      * @var Registry
@@ -82,6 +83,13 @@ class MainDraw extends Template implements TabInterface
     public function getImageUploadUrl()
     {
         return $this->getUrl(self::IMAGE_UPLOAD_URL);
+    }
+    /**
+     * @return string
+     */
+    public function getSaveUrl()
+    {
+        return $this->getUrl(self::SAVE_URL);
     }
     /**
      * @return array

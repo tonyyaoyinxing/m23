@@ -4,32 +4,39 @@
     <el-aside width="150px" style="background-color: rgb(238, 241, 246)">
       <el-menu>
         <el-submenu index="1">
-          <template slot="title"><i class="el-icon-message"></i>图片</template>
+          <template slot="title"><i class="el-icon-picture"></i>图片</template>
           <el-menu-item-group>
-            <el-menu-item index="1-1" @click="addElement(1)" @click="openBackgroud">背景图</el-menu-item>
-            <el-menu-item index="1-2" @click="addElement(2)" @click="openImage">图片</el-menu-item>
+            <el-menu-item index="1-1" @click="addElement(1)">背景图</el-menu-item>
+            <el-menu-item index="1-2" @click="addElement(2)">图片</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="2">
-          <template slot="title"><i class="el-icon-menu"></i>视频</template>
+          <template slot="title"><i class="el-icon-video-camera"></i>视频</template>
           <el-menu-item-group>
-            <el-menu-item index="2-1" @click="addElement(3)" @click="openVideo">视频</el-menu-item>
+            <el-menu-item index="2-1" @click="addElement(3)">视频</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="3">
-          <template slot="title"><i class="el-icon-setting"></i>文本</template>
+          <template slot="title"><i class="el-icon-document"></i>文本</template>
           <el-menu-item-group>
-            <el-menu-item index="3-1" @click="addElement(4)" @click="openText">文本</el-menu-item>
+            <el-menu-item index="3-1" @click="addElement(4)">文本</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
-        <el-submenu index="3">
-          <template slot="title"><i class="el-icon-setting"></i>时间</template>
+        <el-submenu index="4">
+          <template slot="title"><i class="el-icon-time"></i>时间</template>
           <el-menu-item-group>
-            <el-menu-item index="3-1" @click="addElement(5)" @click="openTime">倒计时</el-menu-item>
+            <el-menu-item index="4-1" @click="addElement(5)">倒计时</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
-        <el-menu-item index="4">
-          <i class="el-icon-setting"></i>
+        <el-submenu index="5">
+          <template slot="title"><i class="el-icon-document-copy"></i>模板</template>
+          <el-menu-item-group>
+            <el-menu-item index="5-1" @click="addElement(6)">模板1</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+        
+        <el-menu-item index="6" @click="saveElement()">
+          <i class="el-icon-folder-checked"></i>
           <span slot="title">保存</span>
         </el-menu-item>
       </el-menu>
@@ -94,7 +101,7 @@
     </el-container>
   </el-container>
   <div class="tab-container">
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="closeDialog">
       <el-form
         :model="questionForm"
         ref="dataForm"
@@ -275,18 +282,27 @@ new Vue({
           { label: "18", key: "18px" },
           { label: "19", key: "19px" },
           { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
-          { label: "20", key: "20px" },
+          { label: "21", key: "21px" },
+          { label: "22", key: "22px" },
+          { label: "23", key: "23px" },
+          { label: "24", key: "24px" },
+          { label: "25", key: "25px" },
+          { label: "26", key: "26px" },
+          { label: "27", key: "27px" },
+          { label: "28", key: "28px" },
+          { label: "29", key: "29px" },
+          { label: "30", key: "30px" },
+          { label: "31", key: "31px" },
+          { label: "32", key: "32px" },
+          { label: "33", key: "33px" },
+          { label: "34", key: "34px" },
+          { label: "35", key: "35px" },
+          { label: "36", key: "36px" },
+          { label: "37", key: "37px" },
+          { label: "38", key: "38px" },
+        ],
+        uploadFiles: [
+
         ],
     }
   },
@@ -501,7 +517,6 @@ new Vue({
                 break;
           }
         }else{
-          console.log(params.type);
           switch(params.type){
               case '1':
                 this.elements[index].width = params.width;
@@ -587,6 +602,45 @@ new Vue({
       toTop(index){
         this.elements[index].zIndex = this.elements[index].zIndex+1;
         Vue.set(this.elements, index, this.elements[index]);
+      },
+      closeDialog(){
+
+      },
+      removeSuccess(){
+        
+      },
+      saveElement(){
+        var elementsArr = Object.keys(this.elements).map(key => {
+            //console.log(key); //为每个键名
+          var data = {};
+          data.zIndex = this.elements[key].zIndex;
+          data.type = this.elements[key].type;
+          data.imageUrl = this.elements[key].imageUrl;
+          data.headline = this.elements[key].headline;
+          data.fontPosition = this.elements[key].fontPosition;
+          data.fontSize = this.elements[key].fontSize;
+          data.fontStyle = this.elements[key].fontStyle;
+          data.fontWeight = this.elements[key].fontWeight;
+          data.fontColor = this.elements[key].fontColor;
+          data.width = this.elements[key].width;
+          data.height = this.elements[key].height;
+          data.left = this.elements[key].left;
+          data.top = this.elements[key].top;
+          data.isActive = this.elements[key].isActive;
+          return data;  //把每个对象返回出去生成一个新的数组中相当于0:{id:1}
+        });
+        let formdata = new FormData();
+        formdata.append('data',JSON.stringify(elementsArr));
+        formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+        
+        console.log(elementsArr);
+        axios.post('<?= $block->getSaveUrl()?>', formdata)
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
       }
     }
 })

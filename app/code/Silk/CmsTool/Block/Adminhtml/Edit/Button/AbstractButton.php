@@ -21,8 +21,12 @@ class AbstractButton
         return $this->context->getUrlBuilder()->getUrl($route, $params);
     }
 
-    protected function getMenuId()
+    protected function getBlockTypeId()
     {
-        return $this->context->getRequest()->getParam('menu_id');
+        return $this->context->getRequest()->getParam('block_type_id');
+    }
+    protected function getBlockId()
+    {
+        return $this->context->getRequest()->getParam('block_id');
     }
 }

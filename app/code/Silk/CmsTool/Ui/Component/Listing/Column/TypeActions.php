@@ -6,12 +6,12 @@ use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Magento\Framework\UrlInterface;
 
-class BaseActions extends Column
+class TypeActions extends Column
 {
     /** Url path */
-    const PAGE_URL_PATH_EDIT = 'cmstool/page/edit';
-    const PAGE_URL_PATH_DELETE = 'cmstool/page/delete';
-    const PAGE_URL_PATH_PREVIEW = 'cmstool/page/preview';
+    const URL_PATH_EDIT = 'cmstool/type/edit';
+    const URL_PATH_DELETE = 'cmstool/type/delete';
+    const URL_PATH_PREVIEW = 'cmstool/type/preview';
 
     /** @var UrlInterface */
     protected $urlBuilder;
@@ -29,11 +29,9 @@ class BaseActions extends Column
         UiComponentFactory $uiComponentFactory,
         UrlInterface $urlBuilder,
         array $components = [],
-        array $data = [],
-        $editUrl = self::PAGE_URL_PATH_EDIT
+        array $data = []
     ) {
         $this->urlBuilder = $urlBuilder;
-        $this->editUrl = $editUrl;
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
     /**
@@ -47,13 +45,13 @@ class BaseActions extends Column
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as & $item) {
                 $name = $this->getData('name');
-                if (isset($item['page_id'])) {
+                if (isset($item['block_type_id'])) {
                     $item[$name]['edit'] = [
-                        'href' => $this->urlBuilder->getUrl(self::TEMPLATE_URL_PATH_EDIT, ['page_id' => $item['page_id']]),
+                        'href' => $this->urlBuilder->getUrl(self::URL_PATH_EDIT, ['block_type_id' => $item['block_type_id']]),
                         'label' => __('Edit')
                     ];
                     $item[$name]['delete'] = [
-                        'href' => $this->urlBuilder->getUrl(self::TEMPLATE_URL_PATH_DELETE, ['page_id' => $item['page_id']]),
+                        'href' => $this->urlBuilder->getUrl(self::URL_PATH_DELETE, ['block_type_id' => $item['block_type_id']]),
                         'label' => __('Delete'),
                         'confirm' => [
                             'title' => __('Delete record'),

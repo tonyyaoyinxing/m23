@@ -26,17 +26,21 @@ class TypeDraw extends Template
      */
     protected $typeFactory;
 
+    protected $categoryManagement;
+
     public function __construct(
         Template\Context $context,
         Registry $registry,
         VueProvider $vueProvider,
         \Silk\CmsTool\Model\CmstoolBlockTypeFactory $typeFactory,
+        \Magento\Catalog\Api\CategoryManagementInterface $categoryManagement,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->registry = $registry;
         $this->vueProvider = $vueProvider;
         $this->typeFactory = $typeFactory;
+        $this->categoryManagement = $categoryManagement;
     }
 
     /**
@@ -147,4 +151,38 @@ class TypeDraw extends Template
         ]];
         return $result;
     }
+    public function getAllActiveModel()
+    {
+        return $this->typeFactory->create()->getAllActiveModel();
+    }
+    public function getCategoryTree()
+    {
+        try {
+            $categoryTreeList = $this->categoryManagement->getTree(2);
+            $result = [];
+            if($categoryTreeList->getChildrenData())
+            {
+                $result = $this->getChildrenData($categoryTreeList->getChildrenData());
+            }
+            return $result;
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
+        }
+    }
+    protected function getChildrenData($childrenData)
+    {
+        $result = [];
+        foreach($childrenData as $child)
+        {
+            $data['value'] = $child->getId();
+            $data['label'] = $child->getName();
+            if($child->getChildrenData())
+            {
+                $data['children'] = $this->getChildrenData($child->getChildrenData());
+            }
+            $result[] = $data;
+        }
+        return $result;
+    }
+
 }

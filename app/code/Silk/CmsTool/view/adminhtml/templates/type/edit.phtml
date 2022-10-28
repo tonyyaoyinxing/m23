@@ -15,7 +15,12 @@ $vueComponents = $block->getVueComponents();
             "blockElement": {
                 "vueComponents": <?= json_encode($vueComponents) ?>,
                 "data": {
-                    "elements"  : <?= json_encode($block->renderElement()) ?>
+                    "elements"  : <?= json_encode($block->renderElement()) ?>,
+                    "config": {
+                        "translation": {
+                            "categoryId"     : "<?= __('Category ID') ?>"
+                        }
+                    }
                 }
             }
         }

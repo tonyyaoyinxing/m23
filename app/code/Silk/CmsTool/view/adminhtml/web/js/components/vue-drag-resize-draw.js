@@ -164,6 +164,42 @@
                 required: false,
                 default: '',
             },
+            type: {
+                type: String,
+                default: '1',
+            },
+            imageUrl: {
+                type: String,
+                default: null,
+            },
+            headline: {
+                type: String,
+                default: null,
+            },
+            fontPosition: {
+                type: String,
+                default: null,
+            },
+            fontSize: {
+                type: String,
+                default: null,
+            },
+            fontStyle: {
+                type: String,
+                default: null,
+            },
+            fontWeight: {
+                type: String,
+                default: null,
+            },
+            fontColor: {
+                type: String,
+                default: null,
+            },
+            deadline:{
+                type: String,
+                default: null
+            }
         },
 
         data() {

@@ -28,25 +28,24 @@
                             :headline="rect.headline"
             >
                 <div class="filler" :style="{backgroundColor:rect.color}">
-                <el-button class="float-button-bottom" type="primary" icon="el-icon-bottom" size="mini" @click="toBottom(index)" round></el-button>
-                <el-button class="float-button-top" type="primary" icon="el-icon-top" size="mini" @click="toTop(index)" round></el-button>
-                <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" @click="editElement(index)" round></el-button>
-                <el-button class="float-button-remove" type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
-                <template v-if="rect.type === '1'">
-                    <img :src="rect.imageUrl" alt="" width="100%" height="100%">
-                </template>
-                <template v-else-if="rect.type === '2'">
-                    <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
-                </template>
-                <template v-else-if="rect.type === '3'">
-                    <p class="{rect.class}">{{rect.headline}}</p>
-                </template>
-                <template v-else-if="rect.type === '4'">
-                    <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
-                </template>
-                <template v-else>
-                    <p class="{rect.class}">{{rect.headline}}</p>
-                </template>
+                    <template v-if="rect.type === '0'">
+                      <img :src="rect.imageUrl" alt="" width="100%" height="100%">
+                    </template>
+                    <template v-else-if="rect.type === '1'">
+                      <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
+                    </template>
+                    <template v-else-if="rect.type === '2'">
+                      <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
+                    </template>
+                    <template v-else-if="rect.type === '3'">
+                      <flip-countdown :deadline="rect.deadline"></flip-countdown>
+                    </template>
+                    <template v-else-if="rect.type === '4'">
+                      <p class="{rect.class}">{{rect.headline}}</p>
+                    </template>
+                    <template v-else>
+                      <p class="{rect.class}">{{rect.headline}}</p>
+                    </template>
                 </div>
             </vue-drag-resize>
     </div>
@@ -54,7 +53,8 @@
 
 <script>
     define([
-        'Vue'
+        'Vue',
+        'uuid'
     ], function(Vue) {
         Vue.component('cmstool-block', {
             data() {

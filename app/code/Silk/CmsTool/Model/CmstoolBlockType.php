@@ -10,10 +10,18 @@ class CmstoolBlockType extends \Magento\Framework\Model\AbstractModel
     public function getAllActiveModel()
     {
         $connection = $this->getResource()->getConnection();
-        $select = $connection->select()->from($this->getResource()->getTable('cmstool_block_type'), ['block_type_id','name','type_json'])->where(
+        $select = $connection->select()->from($this->getResource()->getTable('cmstool_block_type'), ['block_type_id','type_json'])->where(
             'is_active = 1'
         );
-        return $connection->fetchAll($select);
+        $data = $connection->fetchAll($select);
+        if($data)
+        {
+            foreach($data as $key=>$val)
+            {
+                $data[$key]['type_json'] = json_decode($data[$key]['type_json'],true);
+            }
+        }
+        return $data;
     }
     public function getAllActiveModelMenu()
     {

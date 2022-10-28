@@ -7,8 +7,7 @@ var config = {
         vueDragResize: 'Silk_CmsTool/js/components/vue-drag-resize-draw',
         'vue-select': 'Silk_CmsTool/js/lib/vue-select',
         'vue-treeselect': 'Silk_CmsTool/js/lib/vue-treeselect',
-        'vue-toolbar-button': 'Silk_CmsTool/js/lib/vue-toolbar-button',
-        uuid: 'Silk_CmsTool/js/lib/uuidv4.min',
+        'uuid': 'Snowdog_Menu/js/lib/uuidv4.min'
     },
     shim: {
         'Vue': { 'exports': 'Vue' }

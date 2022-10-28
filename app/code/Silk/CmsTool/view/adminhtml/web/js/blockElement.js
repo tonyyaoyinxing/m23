@@ -6,8 +6,8 @@ define([
     "uiRegistry",
     "vueDragResize",
     "vue!Silk_CmsTool/vue/app",
-], function(Vue, Vddl, vueSelect, vueTreeselect, registry,vueDragResize) {
-
+    "vue!Silk_CmsTool/vue/element-type/countdown"
+], function(Vue,Vddl, vueSelect, vueTreeselect, registry,vueDragResize) {
     return function(config) {
         var dependencies = [];
         if (config.vueComponents && config.vueComponents.length > 0) {

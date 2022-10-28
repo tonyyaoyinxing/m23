@@ -4,6 +4,7 @@
 >
     <head>
         <css src="Silk_CmsTool::css/vue-drag-resize.css" />
+        <css src="Silk_CmsTool::css/elments.css" />
     </head>
     <body>
         <referenceContainer name="content">

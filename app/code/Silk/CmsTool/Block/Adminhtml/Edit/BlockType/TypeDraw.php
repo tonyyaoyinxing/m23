@@ -11,6 +11,10 @@ class TypeDraw extends Template
 {
     const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
     const SAVE_URL = 'cmstool/type/saveelement';
+    const MEMBER_URL = 'customer/account/index';
+    const REGISTER_URL = 'customer/account/create';
+    const LOGIN_URL = 'customer/account/login';
+    const SKU_URL = 'cmstool/common/validatesku';
     protected $_template = 'type/draw.phtml';
     /**
      * @var Registry
@@ -28,12 +32,21 @@ class TypeDraw extends Template
 
     protected $categoryManagement;
 
+     /**
+     * App Emulator
+     *
+     * @var \Magento\Store\Model\App\Emulation
+     */
+    protected $_emulation;
+    protected $urlHelper;
     public function __construct(
         Template\Context $context,
         Registry $registry,
         VueProvider $vueProvider,
         \Silk\CmsTool\Model\CmstoolBlockTypeFactory $typeFactory,
         \Magento\Catalog\Api\CategoryManagementInterface $categoryManagement,
+        \Magento\Store\Model\App\Emulation $emulation,
+        \Magento\Framework\Url $urlHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -41,6 +54,8 @@ class TypeDraw extends Template
         $this->vueProvider = $vueProvider;
         $this->typeFactory = $typeFactory;
         $this->categoryManagement = $categoryManagement;
+        $this->urlHelper = $urlHelper;
+        $this->_emulation = $emulation;
     }
 
     /**
@@ -56,6 +71,34 @@ class TypeDraw extends Template
     public function getSaveUrl()
     {
         return $this->getUrl(self::SAVE_URL);
+    }
+    /**
+     * @return string
+     */
+    public function getSkuUrl()
+    {
+        return $this->getUrl(self::SKU_URL);
+    }
+    public function getMemeberUrl()
+    {
+        $this->_emulation->startEnvironmentEmulation(null, \Magento\Framework\App\Area::AREA_FRONTEND, true);
+        $url = $this->urlHelper->getUrl(self::MEMBER_URL);
+        $this->_emulation->stopEnvironmentEmulation();
+        return $url;
+    }
+    public function getRegisterUrl()
+    {
+        $this->_emulation->startEnvironmentEmulation(null, \Magento\Framework\App\Area::AREA_FRONTEND, true);
+        $url = $this->urlHelper->getUrl(self::REGISTER_URL);
+        $this->_emulation->stopEnvironmentEmulation();
+        return $url;
+    }
+    public function getLoginUrl()
+    {
+        $this->_emulation->startEnvironmentEmulation(null, \Magento\Framework\App\Area::AREA_FRONTEND, true);
+        $url = $this->urlHelper->getUrl(self::LOGIN_URL);
+        $this->_emulation->stopEnvironmentEmulation();
+        return $url;
     }
     /**
      * @return array
@@ -184,5 +227,5 @@ class TypeDraw extends Template
         }
         return $result;
     }
-
+    
 }

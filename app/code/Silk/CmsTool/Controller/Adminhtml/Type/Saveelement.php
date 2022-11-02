@@ -21,15 +21,15 @@ class Saveelement extends AbstractType
                 $model->load($blockTypeId);
             } else {
                 $model = $this->typeFactory->create();
-            } 
+            }
             $model->setData('type_json',$data);
             $model->save();
+            $jsonResult->setData(['code'=>200,'message'=>'success']);
         } catch (\Magento\Framework\Exception\AlreadyExistsException $e) {
             $jsonResult->setData(['code'=>500,'message'=>'failed']);
         } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
             $jsonResult->setData(['code'=>500,'message'=>'failed']);
         }
-        $jsonResult->setData(['code'=>200,'message'=>'success']);
         return $jsonResult;
     }
 }

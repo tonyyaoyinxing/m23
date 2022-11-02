@@ -19,7 +19,7 @@
     </el-aside>
     <el-container>
       <el-main>
-        <div class="draw-main">
+        <div class="draw-main" :style="{width:width+'px',height:height+'px'}">
           <div class="list" id="list" :isDraggable="true">
               <vue-drag-resize v-for="(rect, index) in elements"
                               :key="index" 
@@ -67,7 +67,21 @@
                       <flip-countdown :deadline="rect.deadline"></flip-countdown>
                     </template>
                     <template v-else-if="rect.type === '4'">
-                      <p class="{rect.class}">{{rect.headline}}</p>
+                      <template v-if="rect.redirectType === 'memberCenter'">
+                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'个人中心'}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'category'">
+                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.categoryName}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'product'">
+                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.name}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'login'">
+                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'登录'}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'register'">
+                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'注册'}}</el-button>
+                      </template>
                     </template>
                     <template v-else>
                       <p class="{rect.class}">{{rect.headline}}</p>
@@ -207,7 +221,7 @@
         </template>
         <template v-else-if="questionForm.type === '4'">
           <el-form-item label="按钮">
-            <el-select v-model="questionForm.buttonStype" placeholder="请选择">
+            <el-select v-model="questionForm.buttonStyle" placeholder="请选择">
               <el-option
                 v-for="item in buttonStyle"
                 :key="item.value"
@@ -215,6 +229,9 @@
                 :value="item.value">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="按钮名称">
+            <el-input v-model="questionForm.headline" />
           </el-form-item>
           <el-form-item label="跳转类型">
             <el-select v-model="questionForm.redirectType" placeholder="请选择">
@@ -226,17 +243,16 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="分类">
+          <el-form-item label="分类" v-if="questionForm.redirectType === 'category'">
             <el-cascader
             v-model="questionForm.categoryId"
             :options="categoryOptions"
-            :props="{ expandTrigger: 'hover' }"
-            @change="handleChange"></el-cascader>
+            :props="{ expandTrigger: 'hover',checkStrictly: true }" ></el-cascader>
           </el-form-item>
-          <el-form-item label="产品编号">
-            <el-input v-model="questionForm.sku" />
+          <el-form-item label="产品编号" v-if="questionForm.redirectType === 'product'">
+            <el-input v-model="questionForm.sku" @blur="onSkuChange()" maxlength="10" show-word-limit/>
           </el-form-item>
-          <el-form-item label="文章链接">
+          <el-form-item label="文章链接" v-if="questionForm.redirectType === 'article'">
             <el-input v-model="questionForm.articleUrl" />
           </el-form-item>
         </template>
@@ -259,6 +275,8 @@ new Vue({
   el: '#app',
   data: function() {
     return {
+        width:960,
+        height:640,
         visible: false,
         isCollapse: true,
         listWidth: 200,
@@ -272,6 +290,7 @@ new Vue({
           height: "",
           imageUrl:"",
         },
+        trackers: ['天', '时','分','秒'],
         dialogFormVisible: false,
         dialogImageUrl: '',
         dialogVisible: false,
@@ -292,9 +311,10 @@ new Vue({
           { label: "段落斜体", key: "oblique" },
         ],
         buttonStyle:[
-          { label: "正常", key: "normal" },
-          { label: "斜体", key: "italic" },
-          { label: "段落斜体", key: "oblique" },
+          { label: "红字白框", key: "red-white" },
+          { label: "黑字黑框", key: "black-black" },
+          { label: "黑字红框", key: "black-red" },
+          { label: "白字白框", key: "white-white" },
         ],
         fontSize: <?= json_encode($block->getFontSize()) ?>,
         predefineColors: [
@@ -385,26 +405,27 @@ new Vue({
         //elements.splice(elements.indexOf(element), 1);
       },
       addElement(type,ctype) {
-        console.log(type);
+        type = type.toString();
+        ctype = ctype.toString();
         switch(type){
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+              console.log(type);
+        
               this.questionForm = {
                 type:type,
               };
+              console.log(this.questionForm.type);
               this.dialogFormVisible = true;
               break
-            case 5:
+            case '5':
               this.elements = [];
-              console.log(this.elements);
-              console.log(this.activeModel[ctype]);
               this.activeModel[ctype].type_json.forEach((item) => {
                 this.elements.push(item);
               })
-              console.log(this.elements);
               this.dialogFormVisible = false;
               break
             default:
@@ -418,7 +439,7 @@ new Vue({
       },
       editElement(index) {
         switch(this.elements[index].type){
-            case 0:
+            case '0':
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
@@ -426,7 +447,7 @@ new Vue({
                 height: this.elements[index].height,
               };
               break
-            case 1:
+            case '1':
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
@@ -434,7 +455,7 @@ new Vue({
                 height: this.elements[index].height,
               };
                 break
-            case 2:
+            case '2':
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
@@ -448,7 +469,7 @@ new Vue({
                 fontColor:this.elements[index].fontColor,
               };
               break
-            case 3:
+            case '3':
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
@@ -456,6 +477,28 @@ new Vue({
                 height: this.elements[index].height,
                 deadline:this.elements[index].deadline,
               };
+              break
+            case '4':
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                headline:this.elements[index].headline,
+                redirectType:this.elements[index].redirectType,
+              };
+              switch(this.elements[index].redirectType)
+              {
+                case 'category':
+                  this.questionForm.categoryId = this.elements[index].categoryId;
+                  break;
+                case 'product':
+                  this.questionForm.sku = this.elements[index].sku;
+                  break;
+                case 'article':
+                  this.questionForm.articleUrl = this.elements[index].articleUrl;
+                  break;
+              }
               break
             default:
               this.questionForm = {
@@ -477,11 +520,12 @@ new Vue({
       //添加增加题目
       createData(index) {
         const params = this.questionForm;
-        console.log(params.deadline)
         params.width = parseInt(params.width); 
         params.height = parseInt(params.height);
+        params.type = params.type.toString();
         if(typeof(index) === 'undefined'||index === null)
         {
+          console.log(params.type);
           switch(params.type){
               case '0':
                 this.elements.push({
@@ -537,6 +581,32 @@ new Vue({
                     deadline:params.deadline,
                 });
                 break;
+              case '4':
+                var redirctData = {
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                    redirectType:params.redirectType,
+                    headline:params.headline,
+                };
+                switch(params.redirectType)
+                {
+                  case 'category':
+                    redirctData.categoryId = params.categoryId;
+                    break;
+                  case 'product':
+                    redirctData.sku = params.sku;
+                    break;
+                  case 'article':
+                    redirctData.articleUrl = params.articleUrl;
+                    break;
+                }
+                this.elements.push(redirctData);
+                break;
               default:
                 break;
           }
@@ -563,10 +633,27 @@ new Vue({
                 this.elements[index].fontColor = params.fontColor;
                 break;
               case '3':
-                console.log(params.deadline)
                 this.elements[index].width = params.width;
                 this.elements[index].height = params.height;
                 this.elements[index].deadline = params.deadline;
+                break;
+              case '4':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].headline = params.headline;
+                this.elements[index].redirectType = params.redirectType;
+                switch(params.redirectType)
+                {
+                  case 'category':
+                    this.elements[index].categoryId = params.categoryId;
+                    break;
+                  case 'product':
+                    this.elements[index].sku = params.sku;
+                    break;
+                  case 'article':
+                    this.elements[index].articleUrl = params.articleUrl;
+                    break;
+                }
                 break;
               default:
                 break;
@@ -579,7 +666,6 @@ new Vue({
         this.showUpload = !this.showUpload
       },
       uploadSuccess(response, file, fileList) {
-         console.log(response);
          this.imageUrl = response;
       },
       beforeUpload(file) {
@@ -603,11 +689,16 @@ new Vue({
         this.dialogVisible = true;
       },
       toBottom(index){
-        this.elements[index].zIndex = this.elements[index].zIndex-1;
-        Vue.set(this.elements, index, this.elements[index]);
+        console.log(this.elements[index].zIndex);
+        if(parseInt(this.elements[index].zIndex)<1){
+          this.$message.error('已到最底层!');
+        }else{
+          this.elements[index].zIndex = parseInt(this.elements[index].zIndex)-1;
+          Vue.set(this.elements, index, this.elements[index]);
+        }
       },
       toTop(index){
-        this.elements[index].zIndex = this.elements[index].zIndex+1;
+        this.elements[index].zIndex = parseInt(this.elements[index].zIndex)+1;
         Vue.set(this.elements, index, this.elements[index]);
       },
       closeDialog(){
@@ -615,6 +706,47 @@ new Vue({
       },
       removeSuccess(){
         
+      },
+      async onSkuChange() {
+          let formdata = new FormData();
+          let index = this.questionForm.index;
+          let name = '';
+          let price = '';
+          formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+          formdata.append('sku',this.questionForm.sku);
+          let res = await axios.post('<?= $block->getSkuUrl()?>', formdata)
+          .then(function (response) {
+              if(response.data.code==200)
+              { 
+                name = response.data.name;
+                price = response.data.name;
+                message = {
+                  type: "success",
+                  message: "该sku存在",
+                };
+              }else{
+                message = {
+                  type: "error",
+                  message: "产品sku输入错误或者该sku不存在",
+                };
+              }
+              
+          })
+          .catch(function (error) {
+              console.log(error);
+              message = {
+                type: "error",
+                message: "产品sku输入错误或者该sku不存在",
+              };
+          });
+          if(message.type=='success')
+          {
+              this.elements[index].name = name;
+              this.elements[index].price = price;
+              Vue.set(this.elements, index, this.elements[index]);
+          }
+          console.log(message);
+          this.$message(message);
       },
       async saveElement(){
         var elementsArr = Object.keys(this.elements).map(key => {
@@ -635,6 +767,10 @@ new Vue({
           data.top = this.elements[key].top;
           data.isActive = this.elements[key].isActive;
           data.deadline = this.elements[key].deadline;
+          data.redirectType = this.elements[key].redirectType;
+          data.categoryId = this.elements[key].categoryId;
+          data.sku = this.elements[key].sku;
+          data.articleUrl = this.elements[key].articleUrl;
           return data;  //把每个对象返回出去生成一个新的数组中相当于0:{id:1}
         });
       

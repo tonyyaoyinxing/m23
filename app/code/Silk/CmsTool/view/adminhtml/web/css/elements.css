@@ -27,15 +27,15 @@
     display: block;
     position: relative;
     padding-bottom: 0.72em;
-    font-size: 2.25rem;
+    font-size: 2.25rem!important;
     line-height: 0.95;
   }
   @media (min-width: 1000px) {
     .flip-clock__slot {
-      font-size: 1.2rem;
+      font-size: 1.2rem !important;
     }
     .flip-card {
-      font-size: 3rem;
+      font-size: 3rem !important;
     }
   }
   .flip-card__top,

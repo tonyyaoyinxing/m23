@@ -53,10 +53,10 @@
                     required: false,
                     default: function () {
                         return {
-                            days: 'Days',
-                            hours: 'Hours',
-                            minutes: 'Minutes',
-                            seconds: 'Seconds',
+                            days: '天',
+                            hours: '时',
+                            minutes: '分',
+                            seconds: '秒',
                         };
                     },
                 },

@@ -19,9 +19,9 @@
 
 .list {
     top: 0px;
-    bottom: 30px;
-    left: 10px;
-    right: 10px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
     box-shadow: 0 0 2px #AAA;
     background-color: rgb(255, 255, 255);
     position: absolute;

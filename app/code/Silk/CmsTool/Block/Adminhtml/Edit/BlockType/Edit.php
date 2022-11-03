@@ -49,10 +49,13 @@ class Edit extends Template
         $model->load($this->getRequest()->getParam('block_type_id'));
         $data = [];
         $data = json_decode($model->getData('type_json'),true);
-        foreach($data as $k=>$v)
+        if($data)
         {
-            $data[$k]['draggable'] = false;
-            $data[$k]['resizable'] = false;
+            foreach($data as $k=>$v)
+            {
+                $data[$k]['draggable'] = false;
+                $data[$k]['resizable'] = false;
+            }
         }
         return $data;
     }

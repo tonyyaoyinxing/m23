@@ -74,7 +74,9 @@
                         <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.categoryName}}</el-button>
                       </template>
                       <template v-else-if="rect.redirectType === 'product'">
-                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.name}}</el-button>
+                        <el-link type="primary" disabled>{{rect.headline?rect.headline:rect.name}}</el-link></br>
+                        <el-link type="primary" disabled>{{rect.price?rect.price:''}}</el-link>
+                        <!-- <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}"></el-button> -->
                       </template>
                       <template v-else-if="rect.redirectType === 'login'">
                         <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'登录'}}</el-button>
@@ -117,7 +119,8 @@
             :on-success="uploadSuccess" 
             :on-remove="removeSuccess"
             :before-upload="beforeUpload"   
-            :class="{ hideUpload: !showUpload }" >
+            :class="{ hideUpload: !showUpload }"
+            :limit="1" >
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-dialog :visible.sync="dialogVisible">
@@ -125,20 +128,28 @@
           </el-dialog>
         </template>
         <template v-else-if="questionForm.type === '1'">
-          <el-upload
-              action="<?= $block->getImageUploadUrl() ?>"
-              :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
-              list-type="picture-card"
-              :auto-upload="true"
-              :on-success="uploadSuccess" 
-              :on-remove="removeSuccess"
-              :before-upload="beforeUpload"   
-              :class="{ hideUpload: !showUpload }" >
-              <i class="el-icon-plus"></i>
+          <el-upload drag class="videoboxUpload" action="" :show-file-list="false" :auto-upload="true"
+            accept=".mp4,.flv,.mov,.mp3" :on-change="videoChange" :before-upload="videoBeforeUp" :limit="1">
+            <i class="el-icon-plus"></i>
           </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
+          <div class="msg_video">
+            <span>注意只能上传.mp4,.flv,.mov,.mp3格式的视频</span>
+          </div>
+          <div class="lbvideo_box">
+            <div class="video_fj">	
+              <el-row :gutter="20">
+                <el-col :span="10">
+                  <video v-if="videoDataUrl" :src="videoDataUrl"
+                  class="avatar" controls="controls">您的浏览器不支持视频播放</video>
+                </el-col>
+                <el-col :span="10" >
+                </el-col>
+              </el-row>		
+            </div>
+          </div>
+          <div class="video_bot">
+            <el-button type="primary" @click="toalySaveVideo">保存视频</el-button>
+          </div>
         </template>
         
         <template v-else-if="questionForm.type === '2'">
@@ -250,7 +261,7 @@
             :props="{ expandTrigger: 'hover',checkStrictly: true }" ></el-cascader>
           </el-form-item>
           <el-form-item label="产品编号" v-if="questionForm.redirectType === 'product'">
-            <el-input v-model="questionForm.sku" @blur="onSkuChange()" maxlength="10" show-word-limit/>
+            <el-input v-model="questionForm.sku" @blur="onSkuChange()" />
           </el-form-item>
           <el-form-item label="文章链接" v-if="questionForm.redirectType === 'article'">
             <el-input v-model="questionForm.articleUrl" />
@@ -349,6 +360,19 @@ new Vue({
           }
         ],
         categoryOptions:<?= json_encode($block->getCategoryTree()) ?>,
+        videoDataUrl: '',
+        videoLoading:'',
+        videoData: '',
+        uploader: '',
+        videoDataForm: {
+            userId: '1663953434320670',
+            region: 'cn-shanghai',
+            partSize: 1048576,//分片大小
+            parallel: 5,//并行上传片数
+            retryCount: 3,//网络失败后重新上传次数
+            retryDuration: 2, //网络失败后重新上传时间
+        },
+        videoId: ''
     }
   },
   mounted() {
@@ -368,6 +392,117 @@ new Vue({
   },
 
   methods: {
+    createUplader(_this) {
+				let uploader = new AliyunUpload.Vod({
+					userId: _this.videoDataForm.userId,
+					partSize: _this.videoDataForm.partSize,
+					parallel: _this.videoDataForm.parallel,
+					retryCount: _this.videoDataForm.retryCount,
+					retryDuration: _this.videoDataForm.retryDuration,
+					//是否上报上传日志到点播，默认为true
+					enableUploadProgress: true,
+					// 开始上传
+					'onUploadstarted': function(uploadInfo) {
+						var url = '<?php echo $this->getUrl('cmstool/common/video');?>';
+            if (!uploadInfo.videoId) { 
+              var timestamp=new Date().getTime();
+              var Title = timestamp +''+uploadInfo.file.name;
+              let formdata = new FormData();
+              formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+              formdata.append('filename',Title);
+              formdata.append('title',Title);
+              formdata.append('template_type','1');
+              formdata.append('action','CreateUploadVideo');
+              axios.post(url, formdata)
+              .then(function (res) {
+                console.log(res)
+                if (res.data.code !== 200) {
+									return _this.$message.error("上传视频失败")
+								}
+								let uploadAuth = res.data.data.UploadAuth
+								let uploadAddress = res.data.data.UploadAddress
+								let videoId = res.data.data.VideoId
+								_this.fileName = res.data.data.FileName
+								uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,
+									videoId)
+								_this.$message.success("上传视频成功")
+								_this.videoLoading.close()
+                console.log(res, 'res,res,res,')
+                // if(response.data.UploadAuth)
+                // {
+                //     var uploadAuth = response.data.UploadAuth
+                //     var uploadAddress = response.data.UploadAddress
+                //     var videoId = response.data.VideoId
+                //     uploader_pc.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+                //     $('#status_pc').text('文件开始上传...')
+                // }else{
+                //     $('#status_pc').text(response.data.Code+''+response.data.Message)
+                // }
+              })
+              .catch(function (error) {
+                  console.log(error);
+                  message = {
+                    type: "error",
+                    message: "上传视频失败",
+                  };
+              });
+            } else {
+              formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+              formdata.append('video_id',uploadInfo.videoId);
+              formdata.append('action','RefreshUploadVideo');
+              axios.post(url, formdata)
+              .then(function (response) {
+                      if(response.data.UploadAuth)
+                      {
+                          var uploadAuth = response.data.UploadAuth
+                          var uploadAddress = response.data.UploadAddress
+                          var videoId = response.data.VideoId
+                          uploader_pc.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+                          $('#status_pc').text('文件开始上传...')
+                      }else{
+                          $('#status_pc').text(response.data.Code+''+response.data.Message)
+                      }
+              })
+              .catch(function (error) {
+                  console.log(error);
+                  message = {
+                    type: "error",
+                    message: "上传视频失败",
+                  };
+              }); 
+            }
+					},
+					// 文件上传成功
+					'onUploadSucceed': function(uploadInfo) {
+						console.log(uploadInfo)
+						_this.videoLoading.close()
+					},
+					// 文件上传失败
+					'onUploadFailed': function(uploadInfo, code, message) {
+						console.log(uploadInfo)
+						_this.videoLoading.close()
+					},
+					// 文件上传进度，单位：字节
+					'onUploadProgress': function(uploadInfo, totalSize, loadedPercent) {
+						console.log(uploadInfo)
+					},
+					// 上传凭证超时
+					'onUploadTokenExpired': function(uploadInfo) {
+						console.log("onUploadTokenExpired");
+						//实现时，根据uploadInfo.videoId调用刷新视频上传凭证接口重新获取UploadAuth
+						//从点播服务刷新的uploadAuth,设置到SDK里   
+						_this.$message.success('上传文件超时，正在重新上传')
+						uploader.resumeUploadWithAuth(uploadAuth);
+					},
+					//全部文件上传结束
+					'onUploadEnd': function(uploadInfo) {
+						console.log("onUploadEnd: uploaded all the files");
+						_this.$message.success('全部文件上传完毕')
+						_this.videoLoading.close()
+					}
+				});
+				return uploader;
+			},
       timeElapsedHandler: function () {
         // console.warn('Count Down Elapsed!!!')
       },
@@ -491,9 +626,12 @@ new Vue({
               {
                 case 'category':
                   this.questionForm.categoryId = this.elements[index].categoryId;
+                  this.questionForm.name = this.elements[index].name;
                   break;
                 case 'product':
                   this.questionForm.sku = this.elements[index].sku;
+                  this.questionForm.name = this.elements[index].name;
+                  this.questionForm.price = this.elements[index].price;
                   break;
                 case 'article':
                   this.questionForm.articleUrl = this.elements[index].articleUrl;
@@ -597,9 +735,13 @@ new Vue({
                 {
                   case 'category':
                     redirctData.categoryId = params.categoryId;
+                    redirctData.name = params.name;
                     break;
                   case 'product':
+                    console.log(params.name);
                     redirctData.sku = params.sku;
+                    redirctData.name = params.name;
+                    redirctData.price = params.price;
                     break;
                   case 'article':
                     redirctData.articleUrl = params.articleUrl;
@@ -646,9 +788,13 @@ new Vue({
                 {
                   case 'category':
                     this.elements[index].categoryId = params.categoryId;
+                    this.elements[index].name = params.name;
                     break;
                   case 'product':
+                    console.log(params.name);
                     this.elements[index].sku = params.sku;
+                    this.elements[index].name = params.name;
+                    this.elements[index].price = params.price;
                     break;
                   case 'article':
                     this.elements[index].articleUrl = params.articleUrl;
@@ -714,12 +860,13 @@ new Vue({
           let price = '';
           formdata.append('form_key','<?php echo $block->getFormKey() ?>');
           formdata.append('sku',this.questionForm.sku);
+          console.log(this.questionForm.sku);
           let res = await axios.post('<?= $block->getSkuUrl()?>', formdata)
           .then(function (response) {
               if(response.data.code==200)
               { 
-                name = response.data.name;
-                price = response.data.name;
+                name = response.data.data.name;
+                price = response.data.data.price;
                 message = {
                   type: "success",
                   message: "该sku存在",
@@ -741,11 +888,9 @@ new Vue({
           });
           if(message.type=='success')
           {
-              this.elements[index].name = name;
-              this.elements[index].price = price;
-              Vue.set(this.elements, index, this.elements[index]);
+              this.questionForm.name = name;
+              this.questionForm.price = price;
           }
-          console.log(message);
           this.$message(message);
       },
       async saveElement(){
@@ -753,27 +898,55 @@ new Vue({
             //console.log(key); //为每个键名
           var data = {};
           data.zIndex = this.elements[key].zIndex;
-          data.type = this.elements[key].type;
-          data.imageUrl = this.elements[key].imageUrl;
-          data.headline = this.elements[key].headline;
-          data.fontPosition = this.elements[key].fontPosition;
-          data.fontSize = this.elements[key].fontSize;
-          data.fontStyle = this.elements[key].fontStyle;
-          data.fontWeight = this.elements[key].fontWeight;
-          data.fontColor = this.elements[key].fontColor;
           data.width = this.elements[key].width;
           data.height = this.elements[key].height;
           data.left = this.elements[key].left;
           data.top = this.elements[key].top;
           data.isActive = this.elements[key].isActive;
-          data.deadline = this.elements[key].deadline;
-          data.redirectType = this.elements[key].redirectType;
-          data.categoryId = this.elements[key].categoryId;
-          data.sku = this.elements[key].sku;
-          data.articleUrl = this.elements[key].articleUrl;
-          return data;  //把每个对象返回出去生成一个新的数组中相当于0:{id:1}
+          data.type = this.elements[key].type;
+          switch (this.elements[key].type) {
+            case '0':
+              data.imageUrl = this.elements[key].imageUrl;
+              break;
+            case '1':
+              data.imageUrl = this.elements[key].imageUrl;
+              break;
+            case '2':
+              data.headline = this.elements[key].headline;
+              data.fontPosition = this.elements[key].fontPosition;
+              data.fontSize = this.elements[key].fontSize;
+              data.fontStyle = this.elements[key].fontStyle;
+              data.fontWeight = this.elements[key].fontWeight;
+              data.fontColor = this.elements[key].fontColor;
+              break;
+            case '3':
+              data.deadline = this.elements[key].deadline;
+              break;
+            case '4':
+              data.headline = this.elements[key].headline;
+              data.buttonStyle = this.elements[key].buttonStyle;
+              data.redirectType = this.elements[key].redirectType;
+              switch(data.redirectType)
+              {
+                case 'category':
+                  data.categoryId = this.elements[key].categoryId;
+                  data.name = this.elements[key].name;
+                  break;
+                case 'product':
+                  data.sku = this.elements[key].sku;
+                  data.name = this.elements[key].name;
+                  data.price = this.elements[key].price;
+                  break;
+                case 'article':
+                  data.articleUrl = this.elements[key].articleUrl;
+                  break;
+              }
+              break;
+            default:
+              break;
+          }
+          return data;
         });
-      
         let formdata = new FormData();
         formdata.append('data',JSON.stringify(elementsArr));
         formdata.append('form_key','<?php echo $block->getFormKey() ?>');
@@ -797,7 +970,49 @@ new Vue({
         });
         console.log(message);
         this.$message(message);
-      }
+      },
+      videoChange(file, fileList) {
+				console.log(file)
+				let _this = this
+				let fileReader = new FileReader()
+				fileReader.readAsDataURL(file.raw)
+				fileReader.onload = function(e) {
+					_this.videoDataUrl = e.currentTarget.result
+				}
+				this.videoData = file
+				console.log(file.size / 1024 / 1024)
+				let userData = '{"Vod":{}}'
+				if (this.uploader) {
+					this.uploader.stopUpload()
+				}
+				this.uploader = this.createUplader(this)
+				this.uploader.addFile(file.raw, null, null, null, userData)
+			},
+			// 视频文件上传前的钩子
+			videoBeforeUp(file) {
+					//视频上传大小
+				const isLt1024M = file.size / 1024 / 1024 < 1024;
+				if (['video/mp4','video/mp3', 'video/ogg', 'video/flv', 'video/avi', 'video/wmv', 'video/rmvb'].indexOf(file.type) == -
+					1) {
+					this.$message.error('请上传正确的视频格式');
+					return false;
+				}
+				if (!isLt1024M ) {
+					this.$message.error('上传视频大小不能超过1GB哦!');
+					return false;
+				}
+			},
+			// 保存视频
+			toalySaveVideo() {
+				this.videoLoading = this.$loading({
+					lock: true,
+					text: '正在上传视频文件，请稍后',
+					spinner: 'el-icon-loading',
+					background: 'rgba(0, 0, 0, 0.7)'
+				});
+				this.uploader.startUpload()
+				console.log(this.uploader.startUpload)
+			},
     }
 })
 </script>

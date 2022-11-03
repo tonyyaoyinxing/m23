@@ -35,7 +35,7 @@ class Validatesku extends Action
                 $product = $this->productRepository->get($sku);
                 $data['name'] = $product->getName();
                 $data['price'] = $product->getPrice();
-                $jsonResult->setData(['code'=>200,'message'=>'success']);
+                $jsonResult->setData(['code'=>200,'message'=>'success','data'=>$data]);
             }
         } catch (\Magento\Framework\Exception\AlreadyExistsException $e) {
             $jsonResult->setData(['code'=>500,'message'=>$e->getMessage()]);

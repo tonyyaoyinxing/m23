@@ -58,7 +58,7 @@
                       <img :src="rect.imageUrl" alt="" width="100%" height="100%">
                     </template>
                     <template v-else-if="rect.type === '1'">
-                      <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
+                      <a><video :src="rect.videoUrl" alt="" width="100%" height="100%" controls="controls"></a>
                     </template>
                     <template v-else-if="rect.type === '2'">
                       <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
@@ -116,8 +116,10 @@
             :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
             list-type="picture-card"
             :auto-upload="true"
+            :on-preview="handlePictureCardPreview"
             :on-success="uploadSuccess" 
             :on-remove="removeSuccess"
+            :file-list="fileList"
             :before-upload="beforeUpload"   
             :class="{ hideUpload: !showUpload }"
             :limit="1" >
@@ -128,28 +130,12 @@
           </el-dialog>
         </template>
         <template v-else-if="questionForm.type === '1'">
-          <el-upload drag class="videoboxUpload" action="" :show-file-list="false" :auto-upload="true"
-            accept=".mp4,.flv,.mov,.mp3" :on-change="videoChange" :before-upload="videoBeforeUp" :limit="1">
-            <i class="el-icon-plus"></i>
+          <el-upload class="avatar-uploader el-upload--text" action='' :show-file-list="false" accept=".mp4,.flv,.mov,.mp3" :on-change="uploadVideoChange" :before-upload="uploadVideoBefore" :limit="1">
+            <video v-if="questionForm.videoUrl !='' && videoFlag == false" :src="questionForm.videoUrl" controls="controls">您的浏览器不支持视频播放</video>
+            <i v-else-if="questionForm.videoUrl =='' && videoFlag == false" class="el-icon-plus avatar-uploader-icon"></i>
+            <el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>
           </el-upload>
-          <div class="msg_video">
-            <span>注意只能上传.mp4,.flv,.mov,.mp3格式的视频</span>
-          </div>
-          <div class="lbvideo_box">
-            <div class="video_fj">	
-              <el-row :gutter="20">
-                <el-col :span="10">
-                  <video v-if="videoDataUrl" :src="videoDataUrl"
-                  class="avatar" controls="controls">您的浏览器不支持视频播放</video>
-                </el-col>
-                <el-col :span="10" >
-                </el-col>
-              </el-row>		
-            </div>
-          </div>
-          <div class="video_bot">
-            <el-button type="primary" @click="toalySaveVideo">保存视频</el-button>
-          </div>
+          <P class="text">请保证视频格式正确，且不超过10M</P>
         </template>
         
         <template v-else-if="questionForm.type === '2'">
@@ -300,10 +286,11 @@ new Vue({
           width: "",
           height: "",
           imageUrl:"",
+          videoId:"",
         },
+        fileList: [],
         trackers: ['天', '时','分','秒'],
         dialogFormVisible: false,
-        dialogImageUrl: '',
         dialogVisible: false,
         showUpload: true,
         fontPosition: [
@@ -361,18 +348,19 @@ new Vue({
         ],
         categoryOptions:<?= json_encode($block->getCategoryTree()) ?>,
         videoDataUrl: '',
-        videoLoading:'',
         videoData: '',
         uploader: '',
         videoDataForm: {
             userId: '1663953434320670',
             region: 'cn-shanghai',
-            partSize: 1048576,//分片大小
+            partSize: 104856,//分片大小
             parallel: 5,//并行上传片数
             retryCount: 3,//网络失败后重新上传次数
             retryDuration: 2, //网络失败后重新上传时间
         },
-        videoId: ''
+        videoId: '',
+        videoFlag:false,
+        videoUploadPercent: 0,
     }
   },
   mounted() {
@@ -404,46 +392,36 @@ new Vue({
 					// 开始上传
 					'onUploadstarted': function(uploadInfo) {
 						var url = '<?php echo $this->getUrl('cmstool/common/video');?>';
+            var formdata = new FormData();
             if (!uploadInfo.videoId) { 
               var timestamp=new Date().getTime();
               var Title = timestamp +''+uploadInfo.file.name;
-              let formdata = new FormData();
               formdata.append('form_key','<?php echo $block->getFormKey() ?>');
               formdata.append('filename',Title);
               formdata.append('title',Title);
               formdata.append('template_type','1');
               formdata.append('action','CreateUploadVideo');
               axios.post(url, formdata)
-              .then(function (res) {
-                console.log(res)
-                if (res.data.code !== 200) {
+              .then(function (response) {
+                console.log(response)
+                if (response.data.code !== 200) {
 									return _this.$message.error("上传视频失败")
 								}
-								let uploadAuth = res.data.data.UploadAuth
-								let uploadAddress = res.data.data.UploadAddress
-								let videoId = res.data.data.VideoId
-								_this.fileName = res.data.data.FileName
+								let uploadAuth = response.data.data.UploadAuth
+								let uploadAddress = response.data.data.UploadAddress
+								let videoId = response.data.data.VideoId
+								_this.fileName = response.data.data.FileName
 								uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,
 									videoId)
-								_this.$message.success("上传视频成功")
-								_this.videoLoading.close()
-                console.log(res, 'res,res,res,')
-                // if(response.data.UploadAuth)
-                // {
-                //     var uploadAuth = response.data.UploadAuth
-                //     var uploadAddress = response.data.UploadAddress
-                //     var videoId = response.data.VideoId
-                //     uploader_pc.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
-                //     $('#status_pc').text('文件开始上传...')
-                // }else{
-                //     $('#status_pc').text(response.data.Code+''+response.data.Message)
-                // }
+								_this.$message.success("上传中..")
+                _this.videoFlag = true;
+                _this.videoUploadPercent = 0;
               })
               .catch(function (error) {
                   console.log(error);
                   message = {
                     type: "error",
-                    message: "上传视频失败",
+                    message: "获取上传凭证失败",
                   };
               });
             } else {
@@ -452,39 +430,66 @@ new Vue({
               formdata.append('action','RefreshUploadVideo');
               axios.post(url, formdata)
               .then(function (response) {
-                      if(response.data.UploadAuth)
-                      {
-                          var uploadAuth = response.data.UploadAuth
-                          var uploadAddress = response.data.UploadAddress
-                          var videoId = response.data.VideoId
-                          uploader_pc.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
-                          $('#status_pc').text('文件开始上传...')
-                      }else{
-                          $('#status_pc').text(response.data.Code+''+response.data.Message)
-                      }
+                  if(response.data.data.UploadAuth)
+                  {
+                      console.log(response.data.data.UploadAuth)
+                      var uploadAuth = response.data.data.UploadAuth
+                      var uploadAddress = response.data.data.UploadAddress
+                      var videoId = response.data.data.VideoId
+                      uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+                      _this.$message.success("上传中..")
+                  }else{
+                    _this.$message.success("获取上传凭证成功")
+                  }
               })
               .catch(function (error) {
                   console.log(error);
                   message = {
                     type: "error",
-                    message: "上传视频失败",
+                    message: "获取上传凭证失败",
                   };
               }); 
             }
 					},
 					// 文件上传成功
 					'onUploadSucceed': function(uploadInfo) {
-						console.log(uploadInfo)
-						_this.videoLoading.close()
+            var url = '<?php echo $this->getUrl('cmstool/common/video');?>';
+            var formdata = new FormData();
+            if (uploadInfo.videoId) { 
+              formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+              formdata.append('video_id',uploadInfo.videoId);
+              formdata.append('action','GetPlayInfo');
+              axios.post(url, formdata)
+              .then(function (response) {
+                console.log(response)
+                if (response.data.code == 200) {
+                  _this.questionForm.videoId = uploadInfo.videoId;
+                  _this.questionForm.videoUrl = response.data.url;
+                  _this.questionForm.videoCoverUrl = response.data.videoCoverUrl;
+								}
+              })
+              .catch(function (error) {
+                  console.log(error);
+                  message = {
+                    type: "error",
+                    message: "获取视频信息失败",
+                  };
+              });
+            } 
 					},
 					// 文件上传失败
 					'onUploadFailed': function(uploadInfo, code, message) {
 						console.log(uploadInfo)
-						_this.videoLoading.close()
 					},
 					// 文件上传进度，单位：字节
 					'onUploadProgress': function(uploadInfo, totalSize, loadedPercent) {
-						console.log(uploadInfo)
+            console.log("onUploadProgress:file:" + uploadInfo.file.name + ", fileSize:" + totalSize + ", percent:" + Math.ceil(loadedPercent * 100) + "%")
+                // var progressPercent = Math.ceil(loadedPercent * 100) + "%"
+                // $('#auth-progress_mb').text(progressPercent)
+                // $('#status_mb').text('文件上传中...')
+            console.log(Math.ceil(loadedPercent * 100));
+            _this.videoFlag = true;
+            _this.videoUploadPercent = parseInt(loadedPercent * 100);
 					},
 					// 上传凭证超时
 					'onUploadTokenExpired': function(uploadInfo) {
@@ -497,8 +502,9 @@ new Vue({
 					//全部文件上传结束
 					'onUploadEnd': function(uploadInfo) {
 						console.log("onUploadEnd: uploaded all the files");
+            _this.videoFlag = false;
+            _this.videoUploadPercent = 0;
 						_this.$message.success('全部文件上传完毕')
-						_this.videoLoading.close()
 					}
 				});
 				return uploader;
@@ -575,12 +581,19 @@ new Vue({
       editElement(index) {
         switch(this.elements[index].type){
             case '0':
+              console.log(this.elements[index].imageUrl);
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
                 height: this.elements[index].height,
+                imageUrl: this.elements[index].imageUrl,
               };
+              this.fileList = [{
+                name: "123.jpg",
+                url: this.elements[index].imageUrl
+              }],
+              this.dialogImageUrl = this.elements[index].imageUrl;
               break
             case '1':
               this.questionForm = {
@@ -588,6 +601,9 @@ new Vue({
                 type:this.elements[index].type,
                 width: this.elements[index].width,
                 height: this.elements[index].height,
+                videoId: this.elements[index].videoId,
+                videoUrl: this.elements[index].videoUrl,
+                videoCoverUrl: this.elements[index].videoCoverUrl,
               };
                 break
             case '2':
@@ -678,13 +694,18 @@ new Vue({
                 });
                 break;
               case '1':
+                console.log(params.videoId);
+                console.log(params.videoUrl);
+                console.log(params.videoCoverUrl);
                 this.elements.push({
                     width: params.width,
                     height: params.height,
                     left: 10,
                     top: 10,
                     isActive: true,
-                    imageUrl:this.imageUrl,
+                    videoId:params.videoId,
+                    videoUrl:params.videoUrl,
+                    videoCoverUrl:params.videoCoverUrl,
                     type:params.type,
                     zIndex:1,
                 });
@@ -763,6 +784,9 @@ new Vue({
                 this.elements[index].width = params.width;
                 this.elements[index].height = params.height;
                 this.elements[index].imageUrl = this.imageUrl;
+                this.elements[index].videoId = params.videoId;
+                this.elements[index].videoUrl = params.videoUrl;
+                this.elements[index].videoCoverUrl = this.videoCoverUrl;
                 break;
               case '2':
                 this.elements[index].width = params.width;
@@ -909,7 +933,9 @@ new Vue({
               data.imageUrl = this.elements[key].imageUrl;
               break;
             case '1':
-              data.imageUrl = this.elements[key].imageUrl;
+              data.videoUrl = this.elements[key].videoUrl;
+              data.videoId = this.elements[key].videoId;
+              data.videoCoverUrl = this.elements[key].videoCoverUrl;
               break;
             case '2':
               data.headline = this.elements[key].headline;
@@ -971,25 +997,28 @@ new Vue({
         console.log(message);
         this.$message(message);
       },
-      videoChange(file, fileList) {
+      uploadVideoChange(file, fileList) {
 				console.log(file)
 				let _this = this
 				let fileReader = new FileReader()
 				fileReader.readAsDataURL(file.raw)
 				fileReader.onload = function(e) {
-					_this.videoDataUrl = e.currentTarget.result
+					_this.videoUrl = e.currentTarget.result
 				}
 				this.videoData = file
 				console.log(file.size / 1024 / 1024)
-				let userData = '{"Vod":{}}'
+				var userData = '{"Vod":{}}'
 				if (this.uploader) {
+          console.log(this.uploader)
 					this.uploader.stopUpload()
 				}
 				this.uploader = this.createUplader(this)
+        console.log(file.raw)
 				this.uploader.addFile(file.raw, null, null, null, userData)
+				this.uploader.startUpload()
 			},
 			// 视频文件上传前的钩子
-			videoBeforeUp(file) {
+			uploadVideoBefore(file) {
 					//视频上传大小
 				const isLt1024M = file.size / 1024 / 1024 < 1024;
 				if (['video/mp4','video/mp3', 'video/ogg', 'video/flv', 'video/avi', 'video/wmv', 'video/rmvb'].indexOf(file.type) == -
@@ -1001,17 +1030,6 @@ new Vue({
 					this.$message.error('上传视频大小不能超过1GB哦!');
 					return false;
 				}
-			},
-			// 保存视频
-			toalySaveVideo() {
-				this.videoLoading = this.$loading({
-					lock: true,
-					text: '正在上传视频文件，请稍后',
-					spinner: 'el-icon-loading',
-					background: 'rgba(0, 0, 0, 0.7)'
-				});
-				this.uploader.startUpload()
-				console.log(this.uploader.startUpload)
 			},
     }
 })

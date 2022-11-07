@@ -13,12 +13,6 @@
                 <item name="class" xsi:type="string">primary</item>
                 <item name="url" xsi:type="string">cmstool/block/new</item>
             </item>
-            <item name="test" xsi:type="array">
-                <item name="name" xsi:type="string">test</item>
-                <item name="label" xsi:type="string" translate="true">Test</item>
-                <item name="class" xsi:type="string">primary</item>
-                <item name="url" xsi:type="string">cmstool/block/test</item>
-            </item>
         </item>
     </argument>
     <dataSource name="silk_cmstool_block_listing_data_source">

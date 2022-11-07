@@ -111,18 +111,20 @@ class TypeDraw extends Template
     {
         $model = $this->typeFactory->create();
         $model->load($this->getRequest()->getParam('block_type_id'));
+        $this->registry->register('type',$model);
         $data = [];
         $data = json_decode($model->getData('type_json'),true);
-        // $element['width'] = 300;
-        // $element['height'] = 100;
-        // $element['left'] = 10;
-        // $element['top'] = 10;
-        // $element['isActive'] = false;
-        // $element['type'] = '4';
-        // $element['element_json']['headline'] = "test";
-        // $element['zIndex'] = 1;
-        // $data[] = $element;
         return $data;
+    }
+    public function getBlockWidth()
+    {
+        $model = $this->registry->registry('type');
+        return $model->getWidth();
+    }
+    public function getBlockHeight()
+    {
+        $model = $this->registry->registry('type');
+        return $model->getHeight();
     }
     public function getBlockTypeId()
     {

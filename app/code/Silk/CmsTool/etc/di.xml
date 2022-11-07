@@ -12,7 +12,7 @@
             <argument name="resourceModel" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlock</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Silk\CmsTool\Model\ResourceModel\CmstoolBlock\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Silk\CmsTool\Model\ResourceModel\CmstoolBlockType\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">cmstool_block_type</argument>
             <argument name="resourceModel" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlockType</argument>
@@ -22,7 +22,7 @@
         <arguments>
             <argument name="collections" xsi:type="array">
                 <item name="silk_cmstool_block_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlock\Collection</item>
-                <item name="silk_cmstool_block_type_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlock\Collection</item>
+                <item name="silk_cmstool_block_type_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolBlockType\Collection</item>
                 <item name="silk_cmstool_page_listing_data_source" xsi:type="string">Silk\CmsTool\Model\ResourceModel\CmstoolPage\Collection</item>
             </argument>
         </arguments>

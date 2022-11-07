@@ -68,21 +68,21 @@
                     </template>
                     <template v-else-if="rect.type === '4'">
                       <template v-if="rect.redirectType === 'memberCenter'">
-                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'个人中心'}}</el-button>
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'个人中心'}}</el-button>
                       </template>
                       <template v-else-if="rect.redirectType === 'category'">
-                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.categoryName}}</el-button>
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.categoryName}}</el-button>
                       </template>
                       <template v-else-if="rect.redirectType === 'product'">
                         <el-link type="primary" disabled>{{rect.headline?rect.headline:rect.name}}</el-link></br>
                         <el-link type="primary" disabled>{{rect.price?rect.price:''}}</el-link>
-                        <!-- <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}"></el-button> -->
+                        <!-- <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}"></el-button> -->
                       </template>
                       <template v-else-if="rect.redirectType === 'login'">
-                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'登录'}}</el-button>
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'登录'}}</el-button>
                       </template>
                       <template v-else-if="rect.redirectType === 'register'">
-                        <el-button class="{rect.buttonType}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'注册'}}</el-button>
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'注册'}}</el-button>
                       </template>
                     </template>
                     <template v-else>
@@ -221,9 +221,9 @@
             <el-select v-model="questionForm.buttonStyle" placeholder="请选择">
               <el-option
                 v-for="item in buttonStyle"
-                :key="item.value"
+                :key="item.key"
                 :label="item.label"
-                :value="item.value">
+                :value="item.key">
               </el-option>
             </el-select>
           </el-form-item>
@@ -272,13 +272,13 @@ new Vue({
   el: '#app',
   data: function() {
     return {
-        width:960,
-        height:640,
+        elements:<?= json_encode($block->renderElements()) ?>,
+        width:<?= $block->getBlockWidth()?>,
+        height:<?= $block->getBlockHeight()?>,
         visible: false,
         isCollapse: true,
         listWidth: 200,
         listHeight: 200,
-        elements:<?= json_encode($block->renderElements()) ?>,
         menus:<?= json_encode($block->renderMenus()) ?>,
         activeModel:<?= json_encode($block->getAllActiveModel()) ?>,
         input: "",
@@ -637,6 +637,7 @@ new Vue({
                 height: this.elements[index].height,
                 headline:this.elements[index].headline,
                 redirectType:this.elements[index].redirectType,
+                buttonStyle:this.elements[index].buttonStyle,
               };
               switch(this.elements[index].redirectType)
               {
@@ -751,6 +752,7 @@ new Vue({
                     zIndex:1,
                     redirectType:params.redirectType,
                     headline:params.headline,
+                    buttonStyle:params.buttonStyle,
                 };
                 switch(params.redirectType)
                 {
@@ -808,6 +810,7 @@ new Vue({
                 this.elements[index].height = params.height;
                 this.elements[index].headline = params.headline;
                 this.elements[index].redirectType = params.redirectType;
+                this.elements[index].buttonStyle = params.buttonStyle;
                 switch(params.redirectType)
                 {
                   case 'category':

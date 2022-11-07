@@ -21,6 +21,8 @@ class Save extends AbstractType
                 $model = $this->typeFactory->create();
             }   
             $model->setData('name',$this->getRequest()->getParam(TypeInterface::NAME));
+            $model->setData('width',$this->getRequest()->getParam(TypeInterface::WIDTH));
+            $model->setData('height',$this->getRequest()->getParam(TypeInterface::HEIGHT));
             $model->save($model);
             $this->messageManager->addSuccessMessage(__('You have saved the Block Type.'));
         } catch (\Magento\Framework\Exception\AlreadyExistsException $e) {

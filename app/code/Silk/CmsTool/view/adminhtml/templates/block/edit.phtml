@@ -1,56 +1,79 @@
 <?php
+/** @var \Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw $block */
+
+$vueComponents = $block->getVueComponents();
 
 ?>
-<button id="add-block" style="display: none;"></button>
-<div id="modal-content">
-    <div class="modal-inner-content">
-        <h2>Modal Title</h2>
-        <p>Modal content.....</p>
-        <input class="admin__control-text" type="text" id="width" name="width" maxlength="255">
-        <input class="admin__control-text" type="text" id="height" name="height" maxlength="255">
-    </div>
+<div id="cmstool-block">
+    <cmstool-block :config="config" :elements="elements">
+    </cmstool-block>
 </div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "blockElement": {
+                "vueComponents": <?= json_encode($vueComponents) ?>,
+                "data": {
+                    "elements"  : <?= json_encode($block->renderElement()) ?>,
+                    "config": {
+                        "translation": {
+                            "categoryId"     : "<?= __('Category ID') ?>"
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+
 <script>
     require(
         [
             'jquery',
-            'Magento_Ui/js/modal/modal',
+            // 'Magento_Ui/js/modal/modal',
             'popupWindow'
         ],
         function($, modal) {
-            var options = {
-                type: 'popup',
-                responsive: true,
-                innerScroll: true,
-                title: 'Create Block',
-                buttons: [{
-                    text: $.mage.__('Close'),
-                    class: 'modal-close',
-                    click: function (){
-                        this.closeModal();
-                    }
-                },{
-                    text: $.mage.__('Create'),
-                    class: 'modal-add',
-                    click: function (){
-                        $("#add-block").click();
-                        this.closeModal();
-                    }
-                }]
-            };
-            modal(options, $('#modal-content'));
-            $("#draw").on('click',function(){
-                $("#modal-content").modal("openModal");
-            });
-            $("#add-block").popupWindow({
+            // var options = {
+            //     type: 'popup',
+            //     responsive: true,
+            //     innerScroll: true,
+            //     title: 'Create Block',
+            //     buttons: [{
+            //         text: $.mage.__('Close'),
+            //         class: 'modal-close',
+            //         click: function (){
+            //             this.closeModal();
+            //         }
+            //     },{
+            //         text: $.mage.__('Create'),
+            //         class: 'modal-add',
+            //         click: function (){
+            //             console.log($('#width').val());
+            //             console.log($('#height').val());
+            //             $("#add-block").click();
+            //             this.closeModal();
+            //         }
+            //     }]
+            // };
+            // modal(options, $('#modal-content'));
+            // $("#draw").on('click',function(){
+            //     $("#modal-content").modal("openModal");
+            // });
+            $("#draw").popupWindow({
                 "windowURL": "<?= $block->getDrawUrl() ?>",
                 "windowName": "Draw Block",
-                "width": $('#width').val(),
-                "height": $('#height').val(),
+                "width": 1960,
+                "height": 840,
+                "centerScreen": true,
                 "left": 0,
                 "top": 0,
                 "resizable": 1,
-                "scrollbars": 1
+                "scrollbars": 1,
+                "menubar": 1,
+                "toolbar":1
             });
         }
     );

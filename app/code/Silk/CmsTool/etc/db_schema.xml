@@ -30,6 +30,8 @@
         <column xsi:type="int" name="block_type_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Block Type ID"/>
         <column xsi:type="tinyint" name="is_active" comment="is active" default="1"/>
         <column xsi:type="varchar" name="name" nullable="false" length="50" comment="Type Name"/>
+        <column xsi:type="smallint" name="width" nullable="false" comment="Block Width"/>
+        <column xsi:type="smallint" name="height" nullable="false" comment="Block Height"/>
         <column xsi:type="text" name="type_json" nullable="false" comment="Block Type Element Json"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="block_type_id"/>

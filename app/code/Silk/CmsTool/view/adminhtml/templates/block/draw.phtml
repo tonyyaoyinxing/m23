@@ -2,49 +2,24 @@
 <div id="app">
   <el-container style="height: 1000px; border: 1px solid #eee">
     <el-aside width="150px" style="background-color: rgb(238, 241, 246)">
+      <el-menu v-for="(menu, index) in menus">
+        <el-submenu index="{index}">
+          <template slot="title"><i class="{menu.class}"></i>{{menu.title}}</template>
+          <el-menu-item-group v-for="(cmenu, cindex) in menu.items">
+            <el-menu-item index="{index}-{cindex}" @click="addElement(index,cindex)">{{cmenu.title}}</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
       <el-menu>
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-picture"></i>图片</template>
-          <el-menu-item-group>
-            <el-menu-item index="1-1" @click="addElement(1)">背景图</el-menu-item>
-            <el-menu-item index="1-2" @click="addElement(2)">图片</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="2">
-          <template slot="title"><i class="el-icon-video-camera"></i>视频</template>
-          <el-menu-item-group>
-            <el-menu-item index="2-1" @click="addElement(3)">视频</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="3">
-          <template slot="title"><i class="el-icon-document"></i>文本</template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1" @click="addElement(4)">文本</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="4">
-          <template slot="title"><i class="el-icon-time"></i>时间</template>
-          <el-menu-item-group>
-            <el-menu-item index="4-1" @click="addElement(5)">倒计时</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="5">
-          <template slot="title"><i class="el-icon-document-copy"></i>模板</template>
-          <el-menu-item-group>
-            <el-menu-item index="5-1" @click="addElement(6)">模板1</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        
-        <el-menu-item index="6" @click="saveElement()">
+        <el-menu-item index="20" @click="saveElement()">
           <i class="el-icon-folder-checked"></i>
           <span slot="title">保存</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
-    
     <el-container>
       <el-main>
-        <div class="draw-main">
+        <div class="draw-main" :style="{width:width+'px',height:height+'px'}">
           <div class="list" id="list" :isDraggable="true">
               <vue-drag-resize v-for="(rect, index) in elements"
                               :key="index" 
@@ -72,23 +47,43 @@
                               :type="rect.type"
                               :imageUrl="rect.imageUrl"
                               :headline="rect.headline"
+                              :deadline="rect.deadline"
               >
                   <div class="filler" :style="{backgroundColor:rect.color}">
                     <el-button class="float-button-bottom" type="primary" icon="el-icon-bottom" size="mini" @click="toBottom(index)" round></el-button>
                     <el-button class="float-button-top" type="primary" icon="el-icon-top" size="mini" @click="toTop(index)" round></el-button>
                     <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" @click="editElement(index)" round></el-button>
                     <el-button class="float-button-remove" type="primary" icon="el-icon-delete" @click="removeElement(index)" size="mini" round></el-button>
-                    <template v-if="rect.type === '1'">
+                    <template v-if="rect.type === '0'">
                       <img :src="rect.imageUrl" alt="" width="100%" height="100%">
                     </template>
+                    <template v-else-if="rect.type === '1'">
+                      <a><video :src="rect.videoUrl" alt="" width="100%" height="100%" controls="controls"></a>
+                    </template>
                     <template v-else-if="rect.type === '2'">
-                      <a><img :src="rect.imageUrl" alt="" width="100%" height="100%"></a>
+                      <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
                     </template>
                     <template v-else-if="rect.type === '3'">
-                      <p class="{rect.class}">{{rect.headline}}</p>
+                      <flip-countdown :deadline="rect.deadline"></flip-countdown>
                     </template>
                     <template v-else-if="rect.type === '4'">
-                      <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
+                      <template v-if="rect.redirectType === 'memberCenter'">
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'个人中心'}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'category'">
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.categoryName}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'product'">
+                        <el-link type="primary" disabled>{{rect.headline?rect.headline:rect.name}}</el-link></br>
+                        <el-link type="primary" disabled>{{rect.price?rect.price:''}}</el-link>
+                        <!-- <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}"></el-button> -->
+                      </template>
+                      <template v-else-if="rect.redirectType === 'login'">
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'登录'}}</el-button>
+                      </template>
+                      <template v-else-if="rect.redirectType === 'register'">
+                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'注册'}}</el-button>
+                      </template>
                     </template>
                     <template v-else>
                       <p class="{rect.class}">{{rect.headline}}</p>
@@ -115,44 +110,35 @@
         <el-form-item label="高度">
           <el-input v-model="questionForm.height" />
         </el-form-item>
-        <template v-if="questionForm.type === '1'">
+        <template v-if="questionForm.type === '0'">
           <el-upload
             action="<?= $block->getImageUploadUrl() ?>"
             :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
             list-type="picture-card"
             :auto-upload="true"
+            :on-preview="handlePictureCardPreview"
             :on-success="uploadSuccess" 
             :on-remove="removeSuccess"
+            :file-list="fileList"
             :before-upload="beforeUpload"   
-            :class="{ hideUpload: !showUpload }" >
+            :class="{ hideUpload: !showUpload }"
+            :limit="1" >
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="dialogImageUrl" alt="">
           </el-dialog>
         </template>
-        <template v-else-if="questionForm.type === '2'">
-          <el-upload
-              action="<?= $block->getImageUploadUrl() ?>"
-              :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
-              list-type="picture-card"
-              :auto-upload="true"
-              :on-success="uploadSuccess" 
-              :on-remove="removeSuccess"
-              :before-upload="beforeUpload"   
-              :class="{ hideUpload: !showUpload }" >
-              <i class="el-icon-plus"></i>
+        <template v-else-if="questionForm.type === '1'">
+          <el-upload class="avatar-uploader el-upload--text" action='' :show-file-list="false" accept=".mp4,.flv,.mov,.mp3" :on-change="uploadVideoChange" :before-upload="uploadVideoBefore" :limit="1">
+            <video v-if="questionForm.videoUrl !='' && videoFlag == false" :src="questionForm.videoUrl" controls="controls">您的浏览器不支持视频播放</video>
+            <i v-else-if="questionForm.videoUrl =='' && videoFlag == false" class="el-icon-plus avatar-uploader-icon"></i>
+            <el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>
           </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-          </el-dialog>
+          <P class="text">请保证视频格式正确，且不超过10M</P>
         </template>
-        <template v-else-if="questionForm.type === '3'">
-          <el-form-item label="文本">
-            <el-input v-model="questionForm.headline" />
-          </el-form-item>
-        </template>
-        <template v-else-if="questionForm.type === '4'">
+        
+        <template v-else-if="questionForm.type === '2'">
           <el-form-item label="文本">
             <el-input v-model="questionForm.headline" />
           </el-form-item>
@@ -220,6 +206,53 @@
             </el-select>
           </el-form-item>
         </template>
+        <template v-else-if="questionForm.type === '3'">
+          <el-form-item label="倒计时">
+            <el-date-picker
+              v-model="questionForm.deadline"
+              type="datetime"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              placeholder="选择日期时间">
+            </el-date-picker>
+          </el-form-item>
+        </template>
+        <template v-else-if="questionForm.type === '4'">
+          <el-form-item label="按钮">
+            <el-select v-model="questionForm.buttonStyle" placeholder="请选择">
+              <el-option
+                v-for="item in buttonStyle"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="按钮名称">
+            <el-input v-model="questionForm.headline" />
+          </el-form-item>
+          <el-form-item label="跳转类型">
+            <el-select v-model="questionForm.redirectType" placeholder="请选择">
+              <el-option
+                v-for="item in redirectType"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="分类" v-if="questionForm.redirectType === 'category'">
+            <el-cascader
+            v-model="questionForm.categoryId"
+            :options="categoryOptions"
+            :props="{ expandTrigger: 'hover',checkStrictly: true }" ></el-cascader>
+          </el-form-item>
+          <el-form-item label="产品编号" v-if="questionForm.redirectType === 'product'">
+            <el-input v-model="questionForm.sku" @blur="onSkuChange()" />
+          </el-form-item>
+          <el-form-item label="文章链接" v-if="questionForm.redirectType === 'article'">
+            <el-input v-model="questionForm.articleUrl" />
+          </el-form-item>
+        </template>
         <template v-else>
           <el-form-item label="文本">
             <el-input v-model="questionForm.headline" />
@@ -239,19 +272,25 @@ new Vue({
   el: '#app',
   data: function() {
     return {
+        elements:<?= json_encode($block->renderElements()) ?>,
+        width:<?= $block->getBlockWidth()?>,
+        height:<?= $block->getBlockHeight()?>,
         visible: false,
         isCollapse: true,
         listWidth: 200,
         listHeight: 200,
-        elements:<?= json_encode($block->renderElements()) ?>,
+        menus:<?= json_encode($block->renderMenus()) ?>,
+        activeModel:<?= json_encode($block->getAllActiveModel()) ?>,
         input: "",
         questionForm: {
           width: "",
           height: "",
           imageUrl:"",
+          videoId:"",
         },
+        fileList: [],
+        trackers: ['天', '时','分','秒'],
         dialogFormVisible: false,
-        dialogImageUrl: '',
         dialogVisible: false,
         showUpload: true,
         fontPosition: [
@@ -269,41 +308,59 @@ new Vue({
           { label: "斜体", key: "italic" },
           { label: "段落斜体", key: "oblique" },
         ],
-        fontSize: [
-          { label: "9", key: "9px" },
-          { label: "10", key: "10px" },
-          { label: "11", key: "11px" },
-          { label: "12", key: "12px" },
-          { label: "13", key: "13px" },
-          { label: "14", key: "14px" },
-          { label: "15", key: "15px" },
-          { label: "16", key: "16px" },
-          { label: "17", key: "17px" },
-          { label: "18", key: "18px" },
-          { label: "19", key: "19px" },
-          { label: "20", key: "20px" },
-          { label: "21", key: "21px" },
-          { label: "22", key: "22px" },
-          { label: "23", key: "23px" },
-          { label: "24", key: "24px" },
-          { label: "25", key: "25px" },
-          { label: "26", key: "26px" },
-          { label: "27", key: "27px" },
-          { label: "28", key: "28px" },
-          { label: "29", key: "29px" },
-          { label: "30", key: "30px" },
-          { label: "31", key: "31px" },
-          { label: "32", key: "32px" },
-          { label: "33", key: "33px" },
-          { label: "34", key: "34px" },
-          { label: "35", key: "35px" },
-          { label: "36", key: "36px" },
-          { label: "37", key: "37px" },
-          { label: "38", key: "38px" },
+        buttonStyle:[
+          { label: "红字白框", key: "red-white" },
+          { label: "黑字黑框", key: "black-black" },
+          { label: "黑字红框", key: "black-red" },
+          { label: "白字白框", key: "white-white" },
         ],
-        uploadFiles: [
-
+        fontSize: <?= json_encode($block->getFontSize()) ?>,
+        predefineColors: [
+          '#ff4500',
+          '#ff8c00',
+          '#ffd700',
+          '#90ee90',
+          '#00ced1',
+          '#1e90ff',
+          '#c71585',
+          '#FF0000'
         ],
+        redirectType:[
+          {
+            value: 'category',
+            label: '分类'
+          }, {
+            value: 'product',
+            label: '产品'
+          }, {
+            value: 'memberCenter',
+            label: '个人中心'
+          }, {
+            value: 'login',
+            label: '登录'
+          }, {
+            value: 'register',
+            label: '注册'
+          }, {
+            value: 'article',
+            label: '文章'
+          }
+        ],
+        categoryOptions:<?= json_encode($block->getCategoryTree()) ?>,
+        videoDataUrl: '',
+        videoData: '',
+        uploader: '',
+        videoDataForm: {
+            userId: '1663953434320670',
+            region: 'cn-shanghai',
+            partSize: 104856,//分片大小
+            parallel: 5,//并行上传片数
+            retryCount: 3,//网络失败后重新上传次数
+            retryDuration: 2, //网络失败后重新上传时间
+        },
+        videoId: '',
+        videoFlag:false,
+        videoUploadPercent: 0,
     }
   },
   mounted() {
@@ -319,10 +376,142 @@ new Vue({
   computed: {
       rects() {
           //return this.$store.state.rect.rects
-      }
+      },
   },
 
   methods: {
+    createUplader(_this) {
+				let uploader = new AliyunUpload.Vod({
+					userId: _this.videoDataForm.userId,
+					partSize: _this.videoDataForm.partSize,
+					parallel: _this.videoDataForm.parallel,
+					retryCount: _this.videoDataForm.retryCount,
+					retryDuration: _this.videoDataForm.retryDuration,
+					//是否上报上传日志到点播，默认为true
+					enableUploadProgress: true,
+					// 开始上传
+					'onUploadstarted': function(uploadInfo) {
+						var url = '<?php echo $this->getUrl('cmstool/common/video');?>';
+            var formdata = new FormData();
+            if (!uploadInfo.videoId) { 
+              var timestamp=new Date().getTime();
+              var Title = timestamp +''+uploadInfo.file.name;
+              formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+              formdata.append('filename',Title);
+              formdata.append('title',Title);
+              formdata.append('template_type','1');
+              formdata.append('action','CreateUploadVideo');
+              axios.post(url, formdata)
+              .then(function (response) {
+                console.log(response)
+                if (response.data.code !== 200) {
+									return _this.$message.error("上传视频失败")
+								}
+								let uploadAuth = response.data.data.UploadAuth
+								let uploadAddress = response.data.data.UploadAddress
+								let videoId = response.data.data.VideoId
+								_this.fileName = response.data.data.FileName
+								uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,
+									videoId)
+								_this.$message.success("上传中..")
+                _this.videoFlag = true;
+                _this.videoUploadPercent = 0;
+              })
+              .catch(function (error) {
+                  console.log(error);
+                  message = {
+                    type: "error",
+                    message: "获取上传凭证失败",
+                  };
+              });
+            } else {
+              formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+              formdata.append('video_id',uploadInfo.videoId);
+              formdata.append('action','RefreshUploadVideo');
+              axios.post(url, formdata)
+              .then(function (response) {
+                  if(response.data.data.UploadAuth)
+                  {
+                      console.log(response.data.data.UploadAuth)
+                      var uploadAuth = response.data.data.UploadAuth
+                      var uploadAddress = response.data.data.UploadAddress
+                      var videoId = response.data.data.VideoId
+                      uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+                      _this.$message.success("上传中..")
+                  }else{
+                    _this.$message.success("获取上传凭证成功")
+                  }
+              })
+              .catch(function (error) {
+                  console.log(error);
+                  message = {
+                    type: "error",
+                    message: "获取上传凭证失败",
+                  };
+              }); 
+            }
+					},
+					// 文件上传成功
+					'onUploadSucceed': function(uploadInfo) {
+            var url = '<?php echo $this->getUrl('cmstool/common/video');?>';
+            var formdata = new FormData();
+            if (uploadInfo.videoId) { 
+              formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+              formdata.append('video_id',uploadInfo.videoId);
+              formdata.append('action','GetPlayInfo');
+              axios.post(url, formdata)
+              .then(function (response) {
+                console.log(response)
+                if (response.data.code == 200) {
+                  _this.questionForm.videoId = uploadInfo.videoId;
+                  _this.questionForm.videoUrl = response.data.url;
+                  _this.questionForm.videoCoverUrl = response.data.videoCoverUrl;
+								}
+              })
+              .catch(function (error) {
+                  console.log(error);
+                  message = {
+                    type: "error",
+                    message: "获取视频信息失败",
+                  };
+              });
+            } 
+					},
+					// 文件上传失败
+					'onUploadFailed': function(uploadInfo, code, message) {
+						console.log(uploadInfo)
+					},
+					// 文件上传进度，单位：字节
+					'onUploadProgress': function(uploadInfo, totalSize, loadedPercent) {
+            console.log("onUploadProgress:file:" + uploadInfo.file.name + ", fileSize:" + totalSize + ", percent:" + Math.ceil(loadedPercent * 100) + "%")
+                // var progressPercent = Math.ceil(loadedPercent * 100) + "%"
+                // $('#auth-progress_mb').text(progressPercent)
+                // $('#status_mb').text('文件上传中...')
+            console.log(Math.ceil(loadedPercent * 100));
+            _this.videoFlag = true;
+            _this.videoUploadPercent = parseInt(loadedPercent * 100);
+					},
+					// 上传凭证超时
+					'onUploadTokenExpired': function(uploadInfo) {
+						console.log("onUploadTokenExpired");
+						//实现时，根据uploadInfo.videoId调用刷新视频上传凭证接口重新获取UploadAuth
+						//从点播服务刷新的uploadAuth,设置到SDK里   
+						_this.$message.success('上传文件超时，正在重新上传')
+						uploader.resumeUploadWithAuth(uploadAuth);
+					},
+					//全部文件上传结束
+					'onUploadEnd': function(uploadInfo) {
+						console.log("onUploadEnd: uploaded all the files");
+            _this.videoFlag = false;
+            _this.videoUploadPercent = 0;
+						_this.$message.success('全部文件上传完毕')
+					}
+				});
+				return uploader;
+			},
+      timeElapsedHandler: function () {
+        // console.warn('Count Down Elapsed!!!')
+      },
       activateEv(index) {
           //this.$store.dispatch('rect/setActive', {id: index});
       },
@@ -332,18 +521,19 @@ new Vue({
       },
 
       changePosition(newRect, index) {
-
-          // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
-          // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
-          // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
-          // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
+            this.elements[index].top = newRect.top;
+            this.elements[index].left = newRect.left;
+            this.elements[index].width = newRect.width;
+            this.elements[index].height = newRect.height;
+            Vue.set(this.elements, index, this.elements[index]);
       },
 
       changeSize(newRect, index) {
-          // this.$store.dispatch('rect/setTop', {id: index, top: newRect.top});
-          // this.$store.dispatch('rect/setLeft', {id: index, left: newRect.left});
-          // this.$store.dispatch('rect/setWidth', {id: index, width: newRect.width});
-          // this.$store.dispatch('rect/setHeight', {id: index, height: newRect.height});
+            this.elements[index].top = newRect.top;
+            this.elements[index].left = newRect.left;
+            this.elements[index].width = newRect.width;
+            this.elements[index].height = newRect.height;
+            Vue.set(this.elements, index, this.elements[index]);
       },
       handleOpen(key, keyPath) {
         //console.log(key, keyPath);
@@ -355,71 +545,68 @@ new Vue({
         this.elements.splice(index, 1);
         //elements.splice(elements.indexOf(element), 1);
       },
-      addElement(type) {
+      addElement(type,ctype) {
+        type = type.toString();
+        ctype = ctype.toString();
         switch(type){
-            case 1:
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+              console.log(type);
+        
               this.questionForm = {
-                type:"1",
-                width: "",
-                height: "",
+                type:type,
               };
+              console.log(this.questionForm.type);
+              this.dialogFormVisible = true;
               break
-            case 2:
-              this.questionForm = {
-                type:"2",
-                width: "",
-                height: "",
-              };
-                break
-            case 3:
-              this.questionForm = {
-                type:"3",
-                width: "",
-                height: "",
-              };
-              break
-            case 4:
-              this.questionForm = {
-                type:"4",
-                width: "",
-                height: "",
-                headline:""
-              };
+            case '5':
+              this.elements = [];
+              this.activeModel[ctype].type_json.forEach((item) => {
+                this.elements.push(item);
+              })
+              this.dialogFormVisible = false;
               break
             default:
+              this.elements = [];
                 //这里是没有找到对应的值处理
+              this.dialogFormVisible = false;
               break
         }
         
-        this.dialogFormVisible = true;
+        
       },
       editElement(index) {
         switch(this.elements[index].type){
-            case 1:
+            case '0':
+              console.log(this.elements[index].imageUrl);
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
                 height: this.elements[index].height,
+                imageUrl: this.elements[index].imageUrl,
               };
+              this.fileList = [{
+                name: "123.jpg",
+                url: this.elements[index].imageUrl
+              }],
+              this.dialogImageUrl = this.elements[index].imageUrl;
               break
-            case 2:
+            case '1':
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
                 height: this.elements[index].height,
+                videoId: this.elements[index].videoId,
+                videoUrl: this.elements[index].videoUrl,
+                videoCoverUrl: this.elements[index].videoCoverUrl,
               };
                 break
-            case 3:
-              this.questionForm = {
-                index:index,
-                type:this.elements[index].type,
-                width: this.elements[index].width,
-                height: this.elements[index].height,
-              };
-              break
-            case 4:
+            case '2':
               this.questionForm = {
                 index:index,
                 type:this.elements[index].type,
@@ -432,6 +619,41 @@ new Vue({
                 fontSize:this.elements[index].fontSize,
                 fontColor:this.elements[index].fontColor,
               };
+              break
+            case '3':
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                deadline:this.elements[index].deadline,
+              };
+              break
+            case '4':
+              this.questionForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                headline:this.elements[index].headline,
+                redirectType:this.elements[index].redirectType,
+                buttonStyle:this.elements[index].buttonStyle,
+              };
+              switch(this.elements[index].redirectType)
+              {
+                case 'category':
+                  this.questionForm.categoryId = this.elements[index].categoryId;
+                  this.questionForm.name = this.elements[index].name;
+                  break;
+                case 'product':
+                  this.questionForm.sku = this.elements[index].sku;
+                  this.questionForm.name = this.elements[index].name;
+                  this.questionForm.price = this.elements[index].price;
+                  break;
+                case 'article':
+                  this.questionForm.articleUrl = this.elements[index].articleUrl;
+                  break;
+              }
               break
             default:
               this.questionForm = {
@@ -453,15 +675,14 @@ new Vue({
       //添加增加题目
       createData(index) {
         const params = this.questionForm;
-        console.log(params.width);
         params.width = parseInt(params.width); 
         params.height = parseInt(params.height);
-        console.log(index);
+        params.type = params.type.toString();
         if(typeof(index) === 'undefined'||index === null)
         {
           console.log(params.type);
           switch(params.type){
-              case '1':
+              case '0':
                 this.elements.push({
                     width: params.width,
                     height: params.height,
@@ -469,34 +690,28 @@ new Vue({
                     top: 10,
                     isActive: true,
                     imageUrl:this.imageUrl,
+                    type:params.type,
+                    zIndex:1,
+                });
+                break;
+              case '1':
+                console.log(params.videoId);
+                console.log(params.videoUrl);
+                console.log(params.videoCoverUrl);
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    videoId:params.videoId,
+                    videoUrl:params.videoUrl,
+                    videoCoverUrl:params.videoCoverUrl,
                     type:params.type,
                     zIndex:1,
                 });
                 break;
               case '2':
-                this.elements.push({
-                    width: params.width,
-                    height: params.height,
-                    left: 10,
-                    top: 10,
-                    isActive: true,
-                    imageUrl:this.imageUrl,
-                    type:params.type,
-                    zIndex:1,
-                });
-                break;
-              case '3':
-                this.elements.push({
-                    width: params.width,
-                    height: params.height,
-                    left: 10,
-                    top: 10,
-                    isActive: true,
-                    type:params.type,
-                    zIndex:1,
-                });
-                break;
-              case '4':
                 this.elements.push({
                     width: params.width,
                     height: params.height,
@@ -513,27 +728,69 @@ new Vue({
                     fontColor:params.fontColor,
                 });
                 break;
+              case '3':
+                console.log(params.deadline)
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                    deadline:params.deadline,
+                });
+                break;
+              case '4':
+                var redirctData = {
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                    redirectType:params.redirectType,
+                    headline:params.headline,
+                    buttonStyle:params.buttonStyle,
+                };
+                switch(params.redirectType)
+                {
+                  case 'category':
+                    redirctData.categoryId = params.categoryId;
+                    redirctData.name = params.name;
+                    break;
+                  case 'product':
+                    console.log(params.name);
+                    redirctData.sku = params.sku;
+                    redirctData.name = params.name;
+                    redirctData.price = params.price;
+                    break;
+                  case 'article':
+                    redirctData.articleUrl = params.articleUrl;
+                    break;
+                }
+                this.elements.push(redirctData);
+                break;
               default:
                 break;
           }
         }else{
           switch(params.type){
+              case '0':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].imageUrl = this.imageUrl;
+                break;
               case '1':
                 this.elements[index].width = params.width;
                 this.elements[index].height = params.height;
                 this.elements[index].imageUrl = this.imageUrl;
+                this.elements[index].videoId = params.videoId;
+                this.elements[index].videoUrl = params.videoUrl;
+                this.elements[index].videoCoverUrl = this.videoCoverUrl;
                 break;
               case '2':
-                this.elements[index].width = params.width;
-                this.elements[index].height = params.height;
-                this.elements[index].imageUrl = this.imageUrl;
-                break;
-              case '3':
-                this.elements[index].width = params.width;
-                this.elements[index].height = params.height;
-                this.elements[index].headline = params.headline;
-                break;
-              case '4':
                 this.elements[index].width = params.width;
                 this.elements[index].height = params.height;
                 this.elements[index].headline = params.headline;
@@ -543,36 +800,45 @@ new Vue({
                 this.elements[index].fontSize = params.fontSize;
                 this.elements[index].fontColor = params.fontColor;
                 break;
+              case '3':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].deadline = params.deadline;
+                break;
+              case '4':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].headline = params.headline;
+                this.elements[index].redirectType = params.redirectType;
+                this.elements[index].buttonStyle = params.buttonStyle;
+                switch(params.redirectType)
+                {
+                  case 'category':
+                    this.elements[index].categoryId = params.categoryId;
+                    this.elements[index].name = params.name;
+                    break;
+                  case 'product':
+                    console.log(params.name);
+                    this.elements[index].sku = params.sku;
+                    this.elements[index].name = params.name;
+                    this.elements[index].price = params.price;
+                    break;
+                  case 'article':
+                    this.elements[index].articleUrl = params.articleUrl;
+                    break;
+                }
+                break;
               default:
                 break;
           }
           Vue.set(this.elements, index, this.elements[index]);
         }
-        
         this.dialogFormVisible = false;
-
-        //如果需要调用接口，请打开注释
-      //   const res = await saveSubject(params);
-      //   console.log(res);
-      //   if (res.code === "0000") {
-      //     this.$message({
-      //       type: "info",
-      //       message: "保存成功",
-      //     });
-      //     this.dialogFormVisible = false;
-      //     this.getQuerySubjectList();
-      //     return;
-      //   }
-      //   this.$message({
-      //     type: "error",
-      //     message: "保存失败",
-      //   });
       },
       toggleUpload() {
         this.showUpload = !this.showUpload
       },
       uploadSuccess(response, file, fileList) {
-         console.log(response);
          this.imageUrl = response;
       },
       beforeUpload(file) {
@@ -596,11 +862,16 @@ new Vue({
         this.dialogVisible = true;
       },
       toBottom(index){
-        this.elements[index].zIndex = this.elements[index].zIndex-1;
-        Vue.set(this.elements, index, this.elements[index]);
+        console.log(this.elements[index].zIndex);
+        if(parseInt(this.elements[index].zIndex)<1){
+          this.$message.error('已到最底层!');
+        }else{
+          this.elements[index].zIndex = parseInt(this.elements[index].zIndex)-1;
+          Vue.set(this.elements, index, this.elements[index]);
+        }
       },
       toTop(index){
-        this.elements[index].zIndex = this.elements[index].zIndex+1;
+        this.elements[index].zIndex = parseInt(this.elements[index].zIndex)+1;
         Vue.set(this.elements, index, this.elements[index]);
       },
       closeDialog(){
@@ -609,39 +880,160 @@ new Vue({
       removeSuccess(){
         
       },
-      saveElement(){
+      async onSkuChange() {
+          let formdata = new FormData();
+          let index = this.questionForm.index;
+          let name = '';
+          let price = '';
+          formdata.append('form_key','<?php echo $block->getFormKey() ?>');
+          formdata.append('sku',this.questionForm.sku);
+          console.log(this.questionForm.sku);
+          let res = await axios.post('<?= $block->getSkuUrl()?>', formdata)
+          .then(function (response) {
+              if(response.data.code==200)
+              { 
+                name = response.data.data.name;
+                price = response.data.data.price;
+                message = {
+                  type: "success",
+                  message: "该sku存在",
+                };
+              }else{
+                message = {
+                  type: "error",
+                  message: "产品sku输入错误或者该sku不存在",
+                };
+              }
+              
+          })
+          .catch(function (error) {
+              console.log(error);
+              message = {
+                type: "error",
+                message: "产品sku输入错误或者该sku不存在",
+              };
+          });
+          if(message.type=='success')
+          {
+              this.questionForm.name = name;
+              this.questionForm.price = price;
+          }
+          this.$message(message);
+      },
+      async saveElement(){
         var elementsArr = Object.keys(this.elements).map(key => {
             //console.log(key); //为每个键名
           var data = {};
           data.zIndex = this.elements[key].zIndex;
-          data.type = this.elements[key].type;
-          data.imageUrl = this.elements[key].imageUrl;
-          data.headline = this.elements[key].headline;
-          data.fontPosition = this.elements[key].fontPosition;
-          data.fontSize = this.elements[key].fontSize;
-          data.fontStyle = this.elements[key].fontStyle;
-          data.fontWeight = this.elements[key].fontWeight;
-          data.fontColor = this.elements[key].fontColor;
           data.width = this.elements[key].width;
           data.height = this.elements[key].height;
           data.left = this.elements[key].left;
           data.top = this.elements[key].top;
           data.isActive = this.elements[key].isActive;
-          return data;  //把每个对象返回出去生成一个新的数组中相当于0:{id:1}
+          data.type = this.elements[key].type;
+          switch (this.elements[key].type) {
+            case '0':
+              data.imageUrl = this.elements[key].imageUrl;
+              break;
+            case '1':
+              data.videoUrl = this.elements[key].videoUrl;
+              data.videoId = this.elements[key].videoId;
+              data.videoCoverUrl = this.elements[key].videoCoverUrl;
+              break;
+            case '2':
+              data.headline = this.elements[key].headline;
+              data.fontPosition = this.elements[key].fontPosition;
+              data.fontSize = this.elements[key].fontSize;
+              data.fontStyle = this.elements[key].fontStyle;
+              data.fontWeight = this.elements[key].fontWeight;
+              data.fontColor = this.elements[key].fontColor;
+              break;
+            case '3':
+              data.deadline = this.elements[key].deadline;
+              break;
+            case '4':
+              data.headline = this.elements[key].headline;
+              data.buttonStyle = this.elements[key].buttonStyle;
+              data.redirectType = this.elements[key].redirectType;
+              switch(data.redirectType)
+              {
+                case 'category':
+                  data.categoryId = this.elements[key].categoryId;
+                  data.name = this.elements[key].name;
+                  break;
+                case 'product':
+                  data.sku = this.elements[key].sku;
+                  data.name = this.elements[key].name;
+                  data.price = this.elements[key].price;
+                  break;
+                case 'article':
+                  data.articleUrl = this.elements[key].articleUrl;
+                  break;
+              }
+              break;
+            default:
+              break;
+          }
+          return data;
         });
         let formdata = new FormData();
         formdata.append('data',JSON.stringify(elementsArr));
         formdata.append('form_key','<?php echo $block->getFormKey() ?>');
-        
+        formdata.append('block_type_id','<?php echo $block->getBlockTypeId() ?>');
         console.log(elementsArr);
-        axios.post('<?= $block->getSaveUrl()?>', formdata)
+        let message = {};
+        let res = await axios.post('<?= $block->getSaveUrl()?>', formdata)
         .then(function (response) {
-          console.log(response);
+            console.log(response);
+            message = {
+              type: "success",
+              message: "保存成功",
+            };
         })
         .catch(function (error) {
-          console.log(error);
+            console.log(error);
+            message = {
+              type: "error",
+              message: "保存失败",
+            };
         });
-      }
+        console.log(message);
+        this.$message(message);
+      },
+      uploadVideoChange(file, fileList) {
+				console.log(file)
+				let _this = this
+				let fileReader = new FileReader()
+				fileReader.readAsDataURL(file.raw)
+				fileReader.onload = function(e) {
+					_this.videoUrl = e.currentTarget.result
+				}
+				this.videoData = file
+				console.log(file.size / 1024 / 1024)
+				var userData = '{"Vod":{}}'
+				if (this.uploader) {
+          console.log(this.uploader)
+					this.uploader.stopUpload()
+				}
+				this.uploader = this.createUplader(this)
+        console.log(file.raw)
+				this.uploader.addFile(file.raw, null, null, null, userData)
+				this.uploader.startUpload()
+			},
+			// 视频文件上传前的钩子
+			uploadVideoBefore(file) {
+					//视频上传大小
+				const isLt1024M = file.size / 1024 / 1024 < 1024;
+				if (['video/mp4','video/mp3', 'video/ogg', 'video/flv', 'video/avi', 'video/wmv', 'video/rmvb'].indexOf(file.type) == -
+					1) {
+					this.$message.error('请上传正确的视频格式');
+					return false;
+				}
+				if (!isLt1024M ) {
+					this.$message.error('上传视频大小不能超过1GB哦!');
+					return false;
+				}
+			},
     }
 })
 </script>

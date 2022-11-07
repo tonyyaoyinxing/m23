@@ -8,6 +8,8 @@ interface TypeInterface{
     const TYPE_ID = 'type_id';
     const BLOCK_TYPE_ID = 'block_type_id';
     const NAME = 'name';
+    const WIDTH = 'width';
+    const HEIGHT = 'height';
     /**
      * @return int
      */
@@ -38,5 +40,25 @@ interface TypeInterface{
      * @return $this
      */
     public function setName($name);
+    /**
+     * @return string
+     */
+    public function getWidth();
+    /**
+     * @param string $width
+     *
+     * @return $this
+     */
+    public function setWidth($width);
+    /**
+     * @return string
+     */
+    public function getHeight();
+    /**
+     * @param string $height
+     *
+     * @return $this
+     */
+    public function setHeight($height);
 }
 ?>

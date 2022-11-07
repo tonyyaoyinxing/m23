@@ -92,6 +92,36 @@
                 <dataScope>name</dataScope>
             </settings>
         </field>
+        <field name="width" sortOrder="30" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">block</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Block Width</label>
+                <dataScope>width</dataScope>
+            </settings>
+        </field>
+        <field name="height" sortOrder="40" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">block</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Block Height</label>
+                <dataScope>height</dataScope>
+            </settings>
+        </field>
     </fieldset>
     <fieldset name="main" sortOrder="20">
         <settings>

@@ -3,13 +3,12 @@
 namespace Silk\CmsTool\Block\Adminhtml\Edit\BlockType;
 
 use Magento\Backend\Block\Template;
-use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Framework\Registry;
 use Silk\CmsTool\Model\VueProvider;
 
 class TypeDraw extends Template
 {
-    const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
+    const IMAGE_UPLOAD_URL = 'cmstool/common/uploadimage';
     const SAVE_URL = 'cmstool/type/saveelement';
     const MEMBER_URL = 'customer/account/index';
     const REGISTER_URL = 'customer/account/create';
@@ -133,7 +132,7 @@ class TypeDraw extends Template
     public function getFontSize()
     {
         $result = [];
-        for($i=1;$i<50;$i++)
+        for($i=1;$i<80;$i++)
         {
             $data['label'] = $i;
             $data['key'] = $i.'px';

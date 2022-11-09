@@ -45,20 +45,18 @@ class BlockActions extends Column
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as & $item) {
                 $name = $this->getData('name');
-                if (isset($item['type_id'])) {
-                    $item[$name]['edit'] = [
-                        'href' => $this->urlBuilder->getUrl(self::URL_PATH_EDIT, ['block_id' => $item['block_id']]),
-                        'label' => __('Edit')
-                    ];
-                    $item[$name]['delete'] = [
-                        'href' => $this->urlBuilder->getUrl(self::URL_PATH_DELETE, ['block_id' => $item['block_id']]),
-                        'label' => __('Delete'),
-                        'confirm' => [
-                            'title' => __('Delete record'),
-                            'message' => __('Are you sure you wan\'t to delete this record?')
-                        ]
-                    ];
-                }
+                $item[$name]['edit'] = [
+                    'href' => $this->urlBuilder->getUrl(self::URL_PATH_EDIT, ['block_id' => $item['block_id']]),
+                    'label' => __('Edit')
+                ];
+                $item[$name]['delete'] = [
+                    'href' => $this->urlBuilder->getUrl(self::URL_PATH_DELETE, ['block_id' => $item['block_id']]),
+                    'label' => __('Delete'),
+                    'confirm' => [
+                        'title' => __('Delete record'),
+                        'message' => __('Are you sure you wan\'t to delete this record?')
+                    ]
+                ];
             }
         }
 

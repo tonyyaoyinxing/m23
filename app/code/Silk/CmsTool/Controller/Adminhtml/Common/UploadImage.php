@@ -1,8 +1,5 @@
 <?php
-
-declare(strict_types=1);
-
-namespace Silk\CmsTool\Controller\Adminhtml\Block;
+namespace Silk\CmsTool\Controller\Adminhtml\Common;
 
 use Exception;
 use Magento\Backend\App\Action;

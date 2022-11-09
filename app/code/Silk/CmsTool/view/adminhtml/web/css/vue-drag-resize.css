@@ -42,8 +42,6 @@
 #cmstool-block{
     margin: 0;
     box-sizing: border-box;
-    width: 960px;
-    height: 640px;
     position: relative;
     font-family: 'Lato', sans-serif;
 }

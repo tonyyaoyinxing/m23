@@ -47,6 +47,7 @@ class Edit extends Template
     {
         $model = $this->typeFactory->create();
         $model->load($this->getRequest()->getParam('block_type_id'));
+        $this->registry->register('block',$model);
         $data = [];
         $data = json_decode($model->getData('type_json'),true);
         if($data)
@@ -65,5 +66,15 @@ class Edit extends Template
     public function getVueComponents()
     {
         return $this->vueProvider->getComponents();
+    }
+    public function getBlockWidth()
+    {
+        $model = $this->registry->registry('block');
+        return $model->getWidth();
+    }
+    public function getBlockHeight()
+    {
+        $model = $this->registry->registry('block');
+        return $model->getHeight();
     }
 }

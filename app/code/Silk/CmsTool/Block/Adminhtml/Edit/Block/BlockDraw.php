@@ -1,6 +1,6 @@
 <?php
 
-namespace Silk\CmsTool\Block\Adminhtml\Edit\BlockType;
+namespace Silk\CmsTool\Block\Adminhtml\Edit\Block;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
@@ -9,7 +9,7 @@ use Silk\CmsTool\Model\VueProvider;
 
 class BlockDraw extends Template
 {
-    const IMAGE_UPLOAD_URL = 'cmstool/block/uploadimage';
+    const IMAGE_UPLOAD_URL = 'cmstool/common/uploadimage';
     const SAVE_URL = 'cmstool/block/saveelement';
     const MEMBER_URL = 'customer/account/index';
     const REGISTER_URL = 'customer/account/create';
@@ -26,9 +26,13 @@ class BlockDraw extends Template
      */
     private $vueProvider;
     /**
-     * @var \Silk\CmsTool\Model\TypeFactory
+     * @var \Silk\CmsTool\Model\CmsToolBlockTypeFactory
      */
     protected $typeFactory;
+/**
+     * @var \Silk\CmsTool\Model\CmsToolBlockFactory
+     */
+    protected $blockFactory;
 
     protected $categoryManagement;
 
@@ -44,6 +48,7 @@ class BlockDraw extends Template
         Registry $registry,
         VueProvider $vueProvider,
         \Silk\CmsTool\Model\CmstoolBlockTypeFactory $typeFactory,
+        \Silk\CmsTool\Model\CmstoolBlockFactory $blockFactory,
         \Magento\Catalog\Api\CategoryManagementInterface $categoryManagement,
         \Magento\Store\Model\App\Emulation $emulation,
         \Magento\Framework\Url $urlHelper,
@@ -53,6 +58,7 @@ class BlockDraw extends Template
         $this->registry = $registry;
         $this->vueProvider = $vueProvider;
         $this->typeFactory = $typeFactory;
+        $this->blockFactory = $blockFactory;
         $this->categoryManagement = $categoryManagement;
         $this->urlHelper = $urlHelper;
         $this->_emulation = $emulation;
@@ -109,31 +115,31 @@ class BlockDraw extends Template
     }
     public function renderElements()
     {
-        $model = $this->typeFactory->create();
-        $model->load($this->getRequest()->getParam('block_type_id'));
-        $this->registry->register('type',$model);
+        $model = $this->blockFactory->create();
+        $model->load($this->getRequest()->getParam('block_id'));
+        $this->registry->register('block',$model);
         $data = [];
-        $data = json_decode($model->getData('type_json'),true);
+        $data = json_decode($model->getData('block_json'),true);
         return $data;
     }
     public function getBlockWidth()
     {
-        $model = $this->registry->registry('type');
+        $model = $this->registry->registry('block');
         return $model->getWidth();
     }
     public function getBlockHeight()
     {
-        $model = $this->registry->registry('type');
+        $model = $this->registry->registry('block');
         return $model->getHeight();
     }
-    public function getBlockTypeId()
+    public function getBlockId()
     {
-        return $this->getRequest()->getParam('block_type_id');
+        return $this->getRequest()->getParam('block_id');
     }
     public function getFontSize()
     {
         $result = [];
-        for($i=1;$i<50;$i++)
+        for($i=1;$i<80;$i++)
         {
             $data['label'] = $i;
             $data['key'] = $i.'px';

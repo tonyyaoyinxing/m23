@@ -1,4 +1,5 @@
 <template>
+  <div class="draw-main" :style="{width:width+'px',height:height+'px'}">
     <div class="list" id="list">
         <vue-drag-resize v-for="(rect, index) in elements"
           :key="index" 
@@ -53,7 +54,8 @@
               </template>
           </div>
       </vue-drag-resize>
-    </div>
+    </div>     
+  </div>
 </template>
 
 <script>
@@ -82,7 +84,15 @@
                 elements: {
                     type: Array,
                     required: true
-                }
+                },
+                width: {
+                    type: Number,
+                    required: true
+                },
+                height: {
+                    type: Number,
+                    required: true
+                },
             },
             mounted() {
                 let listEl = document.getElementById('list');

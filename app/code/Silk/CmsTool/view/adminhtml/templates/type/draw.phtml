@@ -67,22 +67,11 @@
                       <flip-countdown :deadline="rect.deadline"></flip-countdown>
                     </template>
                     <template v-else-if="rect.type === '4'">
-                      <template v-if="rect.redirectType === 'memberCenter'">
-                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'个人中心'}}</el-button>
+                      <template v-if="rect.redirectType === 'product'">
+                        <c-link :rect="rect"></c-link>
                       </template>
-                      <template v-else-if="rect.redirectType === 'category'">
-                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:rect.categoryName}}</el-button>
-                      </template>
-                      <template v-else-if="rect.redirectType === 'product'">
-                        <el-link type="primary" disabled>{{rect.headline?rect.headline:rect.name}}</el-link></br>
-                        <el-link type="primary" disabled>{{rect.price?rect.price:''}}</el-link>
-                        <!-- <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}"></el-button> -->
-                      </template>
-                      <template v-else-if="rect.redirectType === 'login'">
-                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'登录'}}</el-button>
-                      </template>
-                      <template v-else-if="rect.redirectType === 'register'">
-                        <el-button class="{rect.buttonStyle}" :style="{width:rect.width+'px',height:rect.height+'px',marginLeft:0}">{{rect.headline?rect.headline:'注册'}}</el-button>
+                      <template v-else>
+                        <c-button :rect="rect"></c-button>
                       </template>
                     </template>
                     <template v-else>
@@ -98,19 +87,19 @@
   <div class="tab-container">
     <el-dialog :visible.sync="dialogFormVisible" @close="closeDialog">
       <el-form
-        :model="questionForm"
+        :model="cmsForm"
         ref="dataForm"
         label-position="left"
         label-width="90px"
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="宽度">
-          <el-input v-model="questionForm.width" />
+          <el-input v-model="cmsForm.width" />
         </el-form-item>
         <el-form-item label="高度">
-          <el-input v-model="questionForm.height" />
+          <el-input v-model="cmsForm.height" />
         </el-form-item>
-        <template v-if="questionForm.type === '0'">
+        <template v-if="cmsForm.type === '0'">
           <el-upload
             action="<?= $block->getImageUploadUrl() ?>"
             :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
@@ -129,22 +118,22 @@
             <img width="100%" :src="dialogImageUrl" alt="">
           </el-dialog>
         </template>
-        <template v-else-if="questionForm.type === '1'">
+        <template v-else-if="cmsForm.type === '1'">
           <el-upload class="avatar-uploader el-upload--text" action='' :show-file-list="false" accept=".mp4,.flv,.mov,.mp3" :on-change="uploadVideoChange" :before-upload="uploadVideoBefore" :limit="1">
-            <video v-if="questionForm.videoUrl !='' && videoFlag == false" :src="questionForm.videoUrl" controls="controls">您的浏览器不支持视频播放</video>
-            <i v-else-if="questionForm.videoUrl =='' && videoFlag == false" class="el-icon-plus avatar-uploader-icon"></i>
+            <video v-if="cmsForm.videoUrl !='' && videoFlag == false" :src="cmsForm.videoUrl" controls="controls">您的浏览器不支持视频播放</video>
+            <i v-else-if="cmsForm.videoUrl =='' && videoFlag == false" class="el-icon-plus avatar-uploader-icon"></i>
             <el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>
           </el-upload>
           <P class="text">请保证视频格式正确，且不超过10M</P>
         </template>
         
-        <template v-else-if="questionForm.type === '2'">
+        <template v-else-if="cmsForm.type === '2'">
           <el-form-item label="文本">
-            <el-input v-model="questionForm.headline" />
+            <el-input v-model="cmsForm.headline" />
           </el-form-item>
           <el-form-item label="文本位置">
             <el-select
-              v-model="questionForm.fontPosition"
+              v-model="cmsForm.fontPosition"
               class="filter-item"
               placeholder="选择文本位置"
             >
@@ -158,7 +147,7 @@
           </el-form-item>
           <el-form-item label="字体大小">
             <el-select
-              v-model="questionForm.fontSize"
+              v-model="cmsForm.fontSize"
               class="filter-item"
               placeholder="选择字体大小"
             >
@@ -172,14 +161,14 @@
           </el-form-item>
           <el-form-item label="字体颜色">
             <el-color-picker
-              v-model="questionForm.fontColor"
+              v-model="cmsForm.fontColor"
               show-alpha
               :predefine="predefineColors">
             </el-color-picker>
           </el-form-item>
           <el-form-item label="加粗效果">
             <el-select
-              v-model="questionForm.fontWeight"
+              v-model="cmsForm.fontWeight"
               class="filter-item"
               placeholder="选择加粗效果"
             >
@@ -193,7 +182,7 @@
           </el-form-item>
           <el-form-item label="斜体">
             <el-select
-              v-model="questionForm.fontStyle"
+              v-model="cmsForm.fontStyle"
               class="filter-item"
               placeholder="选择加粗效果"
             >
@@ -206,19 +195,39 @@
             </el-select>
           </el-form-item>
         </template>
-        <template v-else-if="questionForm.type === '3'">
+        <template v-else-if="cmsForm.type === '3'">
           <el-form-item label="倒计时">
             <el-date-picker
-              v-model="questionForm.deadline"
+              v-model="cmsForm.deadline"
               type="datetime"
               value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择日期时间">
             </el-date-picker>
           </el-form-item>
         </template>
-        <template v-else-if="questionForm.type === '4'">
-          <el-form-item label="按钮">
-            <el-select v-model="questionForm.buttonStyle" placeholder="请选择">
+        <template v-else-if="cmsForm.type === '4'">
+          <el-form-item label="跳转样式">
+            <el-select v-model="cmsForm.redirectStyle" placeholder="请选择">
+              <el-option
+                v-for="item in redirectStyle"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="文本样式" v-if="cmsForm.redirectStyle === 'text'">
+            <el-select v-model="cmsForm.textStyle" placeholder="请选择">
+              <el-option
+                v-for="item in textStyle"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="按钮样式" v-if="cmsForm.redirectStyle === 'button'">
+            <el-select v-model="cmsForm.buttonStyle" placeholder="请选择">
               <el-option
                 v-for="item in buttonStyle"
                 :key="item.key"
@@ -228,10 +237,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="按钮名称">
-            <el-input v-model="questionForm.headline" />
+            <el-input v-model="cmsForm.headline" />
           </el-form-item>
           <el-form-item label="跳转类型">
-            <el-select v-model="questionForm.redirectType" placeholder="请选择">
+            <el-select v-model="cmsForm.redirectType" placeholder="请选择">
               <el-option
                 v-for="item in redirectType"
                 :key="item.value"
@@ -240,29 +249,29 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="分类" v-if="questionForm.redirectType === 'category'">
+          <el-form-item label="分类" v-if="cmsForm.redirectType === 'category'">
             <el-cascader
-            v-model="questionForm.categoryId"
+            v-model="cmsForm.categoryId"
             :options="categoryOptions"
-            :props="{ expandTrigger: 'hover',checkStrictly: true }" ></el-cascader>
+            :props="{ expandTrigger: 'hover',checkStrictly: true }" @change="onCategoryChange" ref="myCascader"></el-cascader>
           </el-form-item>
-          <el-form-item label="产品编号" v-if="questionForm.redirectType === 'product'">
-            <el-input v-model="questionForm.sku" @blur="onSkuChange()" />
+          <el-form-item label="产品编号" v-if="cmsForm.redirectType === 'product'">
+            <el-input v-model="cmsForm.sku" @blur="onSkuChange()" />
           </el-form-item>
-          <el-form-item label="文章链接" v-if="questionForm.redirectType === 'article'">
-            <el-input v-model="questionForm.articleUrl" />
+          <el-form-item label="文章链接" v-if="cmsForm.redirectType === 'article'">
+            <el-input v-model="cmsForm.articleUrl" />
           </el-form-item>
         </template>
         <template v-else>
           <el-form-item label="文本">
-            <el-input v-model="questionForm.headline" />
+            <el-input v-model="cmsForm.headline" />
           </el-form-item>
         </template>
         
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click=" createData(questionForm.index) ">确定</el-button>
+        <el-button type="primary" @click=" createData(cmsForm.index) ">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -282,7 +291,7 @@ new Vue({
         menus:<?= json_encode($block->renderMenus()) ?>,
         activeModel:<?= json_encode($block->getAllActiveModel()) ?>,
         input: "",
-        questionForm: {
+        cmsForm: {
           width: "",
           height: "",
           imageUrl:"",
@@ -308,11 +317,20 @@ new Vue({
           { label: "斜体", key: "italic" },
           { label: "段落斜体", key: "oblique" },
         ],
+        redirectStyle: [
+          { label: "文字链接", key: "text" },
+          { label: "按钮跳转", key: "button" },
+        ],
         buttonStyle:[
           { label: "红字白框", key: "red-white" },
           { label: "黑字黑框", key: "black-black" },
           { label: "黑字红框", key: "black-red" },
           { label: "白字白框", key: "white-white" },
+        ],
+        textStyle:[
+          { label: "黑字", key: "text-black" },
+          { label: "白字", key: "text-white" },
+          { label: "红字", key: "text-red" },
         ],
         fontSize: <?= json_encode($block->getFontSize()) ?>,
         predefineColors: [
@@ -463,9 +481,9 @@ new Vue({
               .then(function (response) {
                 console.log(response)
                 if (response.data.code == 200) {
-                  _this.questionForm.videoId = uploadInfo.videoId;
-                  _this.questionForm.videoUrl = response.data.url;
-                  _this.questionForm.videoCoverUrl = response.data.videoCoverUrl;
+                  _this.cmsForm.videoId = uploadInfo.videoId;
+                  _this.cmsForm.videoUrl = response.data.url;
+                  _this.cmsForm.videoCoverUrl = response.data.videoCoverUrl;
 								}
               })
               .catch(function (error) {
@@ -556,10 +574,10 @@ new Vue({
             case '4':
               console.log(type);
         
-              this.questionForm = {
+              this.cmsForm = {
                 type:type,
               };
-              console.log(this.questionForm.type);
+              console.log(this.cmsForm.type);
               this.dialogFormVisible = true;
               break
             case '5':
@@ -582,7 +600,7 @@ new Vue({
         switch(this.elements[index].type){
             case '0':
               console.log(this.elements[index].imageUrl);
-              this.questionForm = {
+              this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
@@ -596,7 +614,7 @@ new Vue({
               this.dialogImageUrl = this.elements[index].imageUrl;
               break
             case '1':
-              this.questionForm = {
+              this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
@@ -607,7 +625,7 @@ new Vue({
               };
                 break
             case '2':
-              this.questionForm = {
+              this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
@@ -621,7 +639,7 @@ new Vue({
               };
               break
             case '3':
-              this.questionForm = {
+              this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
@@ -630,7 +648,7 @@ new Vue({
               };
               break
             case '4':
-              this.questionForm = {
+              this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
@@ -638,25 +656,27 @@ new Vue({
                 headline:this.elements[index].headline,
                 redirectType:this.elements[index].redirectType,
                 buttonStyle:this.elements[index].buttonStyle,
+                textStyle:this.elements[key].textStyle,
+                redirectStyle:this.elements[key].redirectStyle,
               };
               switch(this.elements[index].redirectType)
               {
                 case 'category':
-                  this.questionForm.categoryId = this.elements[index].categoryId;
-                  this.questionForm.name = this.elements[index].name;
+                  this.cmsForm.categoryId = this.elements[index].categoryId;
+                  this.cmsForm.name = this.elements[index].name;
                   break;
                 case 'product':
-                  this.questionForm.sku = this.elements[index].sku;
-                  this.questionForm.name = this.elements[index].name;
-                  this.questionForm.price = this.elements[index].price;
+                  this.cmsForm.sku = this.elements[index].sku;
+                  this.cmsForm.name = this.elements[index].name;
+                  this.cmsForm.price = this.elements[index].price;
                   break;
                 case 'article':
-                  this.questionForm.articleUrl = this.elements[index].articleUrl;
+                  this.cmsForm.articleUrl = this.elements[index].articleUrl;
                   break;
               }
               break
             default:
-              this.questionForm = {
+              this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
                 width: this.elements[index].width,
@@ -674,7 +694,7 @@ new Vue({
       },
       //添加增加题目
       createData(index) {
-        const params = this.questionForm;
+        const params = this.cmsForm;
         params.width = parseInt(params.width); 
         params.height = parseInt(params.height);
         params.type = params.type.toString();
@@ -753,6 +773,8 @@ new Vue({
                     redirectType:params.redirectType,
                     headline:params.headline,
                     buttonStyle:params.buttonStyle,
+                    textStyle:params.textStyle,
+                    redirectStyle:params.redirectStyle,
                 };
                 switch(params.redirectType)
                 {
@@ -811,6 +833,8 @@ new Vue({
                 this.elements[index].headline = params.headline;
                 this.elements[index].redirectType = params.redirectType;
                 this.elements[index].buttonStyle = params.buttonStyle;
+                this.elements[index].textStyle = params.textStyle;
+                this.elements[index].redirectStyle = params.redirectStyle;
                 switch(params.redirectType)
                 {
                   case 'category':
@@ -843,7 +867,7 @@ new Vue({
       },
       beforeUpload(file) {
           // 这里我也准备只接受jpg的格式储存所以我就直接用了官方提供的代码
-          const isJPG = file.type === 'image/jpeg';
+          const isJPG = file.type === 'image/jpeg'||'image/png';
           const isLt2M = file.size / 1024 / 1024 < 2;
           
           if (!isJPG) {
@@ -882,12 +906,12 @@ new Vue({
       },
       async onSkuChange() {
           let formdata = new FormData();
-          let index = this.questionForm.index;
+          let index = this.cmsForm.index;
           let name = '';
           let price = '';
           formdata.append('form_key','<?php echo $block->getFormKey() ?>');
-          formdata.append('sku',this.questionForm.sku);
-          console.log(this.questionForm.sku);
+          formdata.append('sku',this.cmsForm.sku);
+          console.log(this.cmsForm.sku);
           let res = await axios.post('<?= $block->getSkuUrl()?>', formdata)
           .then(function (response) {
               if(response.data.code==200)
@@ -915,10 +939,36 @@ new Vue({
           });
           if(message.type=='success')
           {
-              this.questionForm.name = name;
-              this.questionForm.price = price;
+              this.cmsForm.name = name;
+              this.cmsForm.price = price;
           }
           this.$message(message);
+      },
+      onCategoryChange(value){
+        if(value)
+        {
+          if(value[3])
+          {
+              this.cmsForm.category = value[3];
+              const Nodes = this.$refs.myCascader.getCheckedNodes()[0];
+              this.cmsForm.name = Nodes.parent.parent.parent.label;
+          }else if(value[2])
+          {
+              this.cmsForm.category = value[2];
+              const Nodes = this.$refs.myCascader.getCheckedNodes()[0];
+              this.cmsForm.name = Nodes.parent.parent.label;
+          }else if(value[1])
+          {
+              this.cmsForm.category = value[1];
+              const Nodes = this.$refs.myCascader.getCheckedNodes()[0];
+              this.cmsForm.name = Nodes.parent.label;
+          }else if(value[0])
+          {
+              this.cmsForm.category = value[0];
+              const Nodes = this.$refs.myCascader.getCheckedNodes()[0];
+              this.cmsForm.name = Nodes.label;
+          }
+        }
       },
       async saveElement(){
         var elementsArr = Object.keys(this.elements).map(key => {
@@ -955,10 +1005,13 @@ new Vue({
               data.headline = this.elements[key].headline;
               data.buttonStyle = this.elements[key].buttonStyle;
               data.redirectType = this.elements[key].redirectType;
+              data.textStyle = this.elements[key].textStyle;
+              data.redirectStyle = this.elements[key].redirectStyle;
               switch(data.redirectType)
               {
                 case 'category':
                   data.categoryId = this.elements[key].categoryId;
+                  data.category = this.elements[key].category;
                   data.name = this.elements[key].name;
                   break;
                 case 'product':

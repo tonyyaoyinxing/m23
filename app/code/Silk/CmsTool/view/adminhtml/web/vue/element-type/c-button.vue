@@ -1,9 +1,5 @@
 <template>
-  <button 
-    class="{rect.buttonStyle}"
-  >
-    <slot>{{rect.headline}}</slot>
-  </button>
+  <a class="c-button" :class="rect.buttonStyle" href="">{{rect.headline?rect.headline:rect.name}}</a>
 </template>
 <script>
 define([

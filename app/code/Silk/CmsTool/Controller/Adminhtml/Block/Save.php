@@ -12,25 +12,27 @@ class Save extends AbstractBlock
      */
     public function execute()
     {
-        $data = $this->getRequest()->getParam('data');
+        $data = $this->getRequest()->getParams();
         $blockId = $this->getRequest()->getParam('block_id');
-        $jsonResult = $this->jsonResultFactory->create();
+        $resultRedirect = $this->resultRedirectFactory->create();
         try {
             if ($blockId) {
-                /** @var  \Silk\CmsTool\Model\Module $model */
-                $model = $this->blockFactory->load($blockId);
+                $model = $this->blockFactory->create()->load($blockId);
             } else {
                 $model = $this->blockFactory->create();
             }   
-            $model->setData($data);
-            $model->setData('block_json',$blockId);
+            $model->setData('name',$data['name']);
+            $model->setData('width',$data['width']);
+            $model->setData('height',$data['height']);
             $model->save();
+            $this->messageManager->addSuccessMessage(__('You have saved the Block Type.'));
         } catch (\Magento\Framework\Exception\AlreadyExistsException $e) {
-            $jsonResult->setData(['code'=>500,'message'=>'failed']);
+            $this->messageManager->addErrorMessage(
+                __('A Page with the same term already exists in an associated store.')
+            );
         } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
-            $jsonResult->setData(['code'=>500,'message'=>'failed']);
+            $this->messageManager->addErrorMessage(__('This Block Type no longer exists.'));
         }
-        $jsonResult->setData(['code'=>200,'message'=>'success']);
-        return $jsonResult;
+        return $resultRedirect->setPath('*/*/');
     }
 }

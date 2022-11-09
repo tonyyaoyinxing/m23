@@ -13,17 +13,16 @@ class Saveelement extends AbstractBlock
     public function execute()
     {
         $data = $this->getRequest()->getParam('data');
-        $elementId = $this->getRequest()->getParam('type_id');
+        $blockId = $this->getRequest()->getParam('block_id');
         $jsonResult = $this->jsonResultFactory->create();
         try {
-            if ($elementId) {
-                /** @var  \Silk\CmsTool\Model\Module $model */
-                $model = $this->elementFactory->load($elementId);
+            if ($blockId) {
+                /** @var  \Silk\CmsTool\Model\CmsToolBlockFactory $model */
+                $model = $this->blockFactory->create()->load($blockId);
             } else {
-                $model = $this->elementFactory->create();
+                $model = $this->blockFactory->create();
             }
-            $model->setData('block_type_id','1');   
-            $model->setData('type_json',$data);
+            $model->setData('block_json',$data);
             $model->save();
         } catch (\Magento\Framework\Exception\AlreadyExistsException $e) {
             $jsonResult->setData(['code'=>500,'message'=>'failed']);

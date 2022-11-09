@@ -10,7 +10,7 @@
         <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js" src_type="url"/>
         <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js" src_type="url"/> -->
         <!-- <script src="Silk_CmsTool::js/Vue.js"/> -->
-        <css src="Silk_CmsTool::css/element.css"/>
+        <css src="Silk_CmsTool::css/elements.css"/>
     </head>
     <body>
         <referenceContainer name="content">

@@ -2,25 +2,21 @@
 /** @var \Silk\CmsTool\Block\Adminhtml\Edit\Block\Draw $block */
 
 $vueComponents = $block->getVueComponents();
-
+$elements = $block->renderElement();
 ?>
 <div id="cmstool-block">
-    <cmstool-block :config="config" :elements="elements">
+    <cmstool-block :elements="elements" :width="width" :height="height">
     </cmstool-block>
 </div>
-
 <script type="text/x-magento-init">
     {
         "*": {
             "blockElement": {
                 "vueComponents": <?= json_encode($vueComponents) ?>,
                 "data": {
-                    "elements"  : <?= json_encode($block->renderElement()) ?>,
-                    "config": {
-                        "translation": {
-                            "categoryId"     : "<?= __('Category ID') ?>"
-                        }
-                    }
+                    "elements"  : <?= json_encode($elements) ?>,
+                    "width":<?= $block->getBlockWidth() ?>,
+                    "height":<?= $block->getBlockHeight() ?>
                 }
             }
         }

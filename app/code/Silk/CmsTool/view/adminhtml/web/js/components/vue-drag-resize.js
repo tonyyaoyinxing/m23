@@ -102,14 +102,14 @@ var vueDragResize = {
         },
         minw: {
             type: Number,
-            default: 50,
+            default: 20,
             validator(val) {
                 return val >= 0;
             },
         },
         minh: {
             type: Number,
-            default: 50,
+            default: 20,
             validator(val) {
                 return val >= 0;
             },

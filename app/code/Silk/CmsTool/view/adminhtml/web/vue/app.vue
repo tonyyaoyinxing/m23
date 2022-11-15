@@ -29,24 +29,34 @@
           :headline="rect.headline"
         >
           <div class="filler" :style="{backgroundColor:rect.color}">
-              <template v-if="rect.type === '0'">
+              <template v-if="rect.type === '1'">
                 <img :src="rect.imageUrl" alt="" width="100%" height="100%">
               </template>
-              <template v-else-if="rect.type === '1'">
+              <template v-else-if="rect.type === '2'">
                 <a><video :src="rect.videoUrl" alt="" width="100%" height="100%" controls="controls"/></a>
               </template>
-              <template v-else-if="rect.type === '2'">
+              <template v-else-if="rect.type === '3'">
                 <div class="{rect.class}" :style="{fontWeight:rect.fontWeight,fontStyle:rect.fontStyle,color:rect.fontColor,fontSize:rect.fontSize,textAlign:rect.fontPosition,lineHeight:rect.height+'px'}">{{rect.headline}}</div>
               </template>
-              <template v-else-if="rect.type === '3'">
+              <template v-else-if="rect.type === '4'">
                 <flip-countdown :deadline="rect.deadline"></flip-countdown>
               </template>
-              <template v-else-if="rect.type === '4'">
-                <template v-if="rect.redirectType === 'product'">
-                  <c-link :rect="rect"></c-link>
+              <template v-else-if="rect.type === '5'">
+                <template v-if="rect.redirectStyle === 'text'">
+                  <template v-if="rect.redirectType === 'product'">
+                    <c-link :rect="rect"></c-link>
+                  </template>
+                  <template v-else>
+                    <c-link-text :rect="rect"></c-link-text>
+                  </template>
                 </template>
                 <template v-else>
-                  <c-button :rect="rect"></c-button>
+                  <template v-if="rect.redirectType === 'product'">
+                    <c-button :rect="rect"></c-button>
+                  </template>
+                  <template v-else>
+                    <c-button :rect="rect"></c-button>
+                  </template>
                 </template>
               </template>
               <template v-else>

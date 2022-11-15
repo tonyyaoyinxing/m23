@@ -20,6 +20,7 @@
         <script src="Silk_CmsTool::js/components/vue-drag-resize.js"/>
         <script src="Silk_CmsTool::js/components/countdown.js"/>
         <script src="Silk_CmsTool::js/components/c-link.js"/>
+        <script src="Silk_CmsTool::js/components/c-link-text.js"/>
         <script src="Silk_CmsTool::js/components/c-button.js"/>
         <script src="Silk_CmsTool::js/lib/es6-promise.min.js"/>
         <script src="Silk_CmsTool::js/lib/aliyun-oss-sdk-6.17.1.min.js"/>

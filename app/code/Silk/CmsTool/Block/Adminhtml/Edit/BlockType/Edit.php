@@ -70,11 +70,11 @@ class Edit extends Template
     public function getBlockWidth()
     {
         $model = $this->registry->registry('block');
-        return $model->getWidth();
+        return $model->getWidth()?$model->getWidth():0;
     }
     public function getBlockHeight()
     {
         $model = $this->registry->registry('block');
-        return $model->getHeight();
+        return $model->getHeight()?$model->getHeight():0;
     }
 }

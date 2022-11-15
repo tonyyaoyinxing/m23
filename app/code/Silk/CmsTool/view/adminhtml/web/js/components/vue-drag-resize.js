@@ -196,7 +196,11 @@ var vueDragResize = {
         deadline:{
             type: String,
             default: null
-        }
+        },
+        backgroundColor:{
+            type: String,
+            default: null
+        },
     },
 
     data() {

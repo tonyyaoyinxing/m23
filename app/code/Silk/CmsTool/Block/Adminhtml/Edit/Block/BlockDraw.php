@@ -152,13 +152,15 @@ class BlockDraw extends Template
         $modelData = $this->typeFactory->create()->getAllActiveModelMenu();
         // var_dump($modelData);
         // exit;
-        $result = [[
+        $result = [
+        [
+            'title' => '模板',
+            'class' => 'el-icon-button',
+            'items' => $modelData,
+        ],[
             'title' => '图片',
             'class' => 'el-icon-picture',
             'items' => [
-                [
-                    'title'=>'背景图'
-                ],
                 [
                     'title'=>'图片'
                 ]
@@ -188,17 +190,13 @@ class BlockDraw extends Template
                 ]
             ],
         ],[
-            'title' => '按钮',
+            'title' => '跳转',
             'class' => 'el-icon-button',
             'items' => [
                 [
-                    'title'=>'按钮'
+                    'title'=>'跳转'
                 ]
             ],
-        ],[
-            'title' => '模板',
-            'class' => 'el-icon-button',
-            'items' => $modelData,
         ]];
         return $result;
     }

@@ -112,7 +112,10 @@ class TypeDraw extends Template
         $model->load($this->getRequest()->getParam('block_type_id'));
         $this->registry->register('type',$model);
         $data = [];
-        $data = json_decode($model->getData('type_json'),true);
+        if($model->getData('type_json'))
+        {
+            $data = json_decode($model->getData('type_json'),true);
+        }
         return $data;
     }
     public function getBlockWidth()
@@ -143,55 +146,32 @@ class TypeDraw extends Template
     public function renderMenus()
     {
         $modelData = $this->typeFactory->create()->getAllActiveModelMenu();
-        // var_dump($modelData);
-        // exit;
-        $result = [[
+        $result = [
+        [
+            'title' => '模板',
+            'icon' => 'el-icon-button',
+            'items' => $modelData,
+        ],[
             'title' => '图片',
-            'class' => 'el-icon-picture',
-            'items' => [
-                [
-                    'title'=>'背景图'
-                ],
-                [
-                    'title'=>'图片'
-                ]
-            ],
+            'icon' => 'el-icon-picture'
         ],[
             'title' => '视频',
-            'class' => 'el-icon-video-camera',
-            'items' => [
-                [
-                    'title'=>'视频'
-                ]
-            ],
+            'icon' => 'el-icon-video-camera'
         ],[
             'title' => '文本',
-            'class' => 'el-icon-document',
-            'items' => [
-                [
-                    'title'=>'文本'
-                ]
-            ],
+            'icon' => 'el-icon-document'
         ],[
             'title' => '倒计时',
-            'class' => 'el-icon-time',
-            'items' => [
-                [
-                    'title'=>'倒计时'
-                ]
-            ],
+            'icon' => 'el-icon-time'
         ],[
-            'title' => '按钮',
-            'class' => 'el-icon-button',
-            'items' => [
-                [
-                    'title'=>'按钮'
-                ]
-            ],
+            'title' => '跳转',
+            'icon' => 'el-icon-position'
         ],[
-            'title' => '模板',
-            'class' => 'el-icon-button',
-            'items' => $modelData,
+            'title' => '背景板',
+            'icon' => 'el-icon-files'
+        ],[
+            'title' => '轮播图',
+            'icon' => 'el-icon-document-copy'
         ]];
         return $result;
     }

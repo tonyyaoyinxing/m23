@@ -9,6 +9,7 @@ define([
     "vue!Silk_CmsTool/vue/element-type/countdown",
     "vue!Silk_CmsTool/vue/element-type/c-button",
     "vue!Silk_CmsTool/vue/element-type/c-link",
+    "vue!Silk_CmsTool/vue/element-type/c-link-text",
 ], function(Vue,Vddl, vueSelect, vueTreeselect, registry,vueDragResize) {
     return function(config) {
         var dependencies = [];

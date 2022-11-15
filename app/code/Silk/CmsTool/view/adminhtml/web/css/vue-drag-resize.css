@@ -115,5 +115,11 @@
     position: absolute;
     padding: 0px 0px !important;
 }
+.float-button-copy{
+    top: -18px;
+    right: 112px;
+    position: absolute;
+    padding: 0px 0px !important;
+}
 
 

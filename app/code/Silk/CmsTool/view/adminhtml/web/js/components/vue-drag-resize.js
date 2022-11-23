@@ -201,6 +201,32 @@ var vueDragResize = {
             type: String,
             default: null
         },
+        carouselType:{
+            type: String,
+            default: null
+        },
+        carouselNum:{
+            type: String,
+            default: null
+        },
+        carouselAuto:{
+            type: String,
+            default: null
+        },
+        carouselDirection:{
+            type: String,
+            default: null
+        },
+        carouselInterval:{
+            type: String,
+            default: null
+        },
+        carouselItem:{
+            type: Array,
+            default() {
+                return [];
+            },
+        },
     },
 
     data() {

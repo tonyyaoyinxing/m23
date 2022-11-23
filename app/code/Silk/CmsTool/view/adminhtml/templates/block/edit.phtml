@@ -15,8 +15,8 @@ $elements = $block->renderElement();
                 "vueComponents": <?= json_encode($vueComponents) ?>,
                 "data": {
                     "elements"  : <?= json_encode($elements) ?>,
-                    "width":<?= $block->getBlockWidth() ?>,
-                    "height":<?= $block->getBlockHeight() ?>
+                    "width":<?= $block->getBlockWidth()?$block->getBlockWidth():0 ?>,
+                    "height":<?= $block->getBlockHeight()?$block->getBlockHeight():0  ?>
                 }
             }
         }

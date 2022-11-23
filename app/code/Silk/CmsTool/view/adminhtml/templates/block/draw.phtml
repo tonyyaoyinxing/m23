@@ -1,14 +1,22 @@
 
 <div id="app">
   <el-container style="height: 1000px; border: 1px solid #eee">
-    <el-aside width="150px" style="background-color: rgb(238, 241, 246)">
+    <el-aside width="400px" style="background-color: rgb(238, 241, 246);text-align:center">
       <el-menu v-for="(menu, index) in menus">
-        <el-submenu index="{index}">
-          <template slot="title"><i class="{menu.class}"></i>{{menu.title}}</template>
-          <el-menu-item-group v-for="(cmenu, cindex) in menu.items">
-            <el-menu-item index="{index}-{cindex}" @click="addElement(index,cindex)">{{cmenu.title}}</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
+        <template v-if="index === 0">
+          <el-submenu index="{index}">
+            <template slot="title"><i :class="setClass(menu.icon)"></i>{{menu.title}}</template>  
+            <el-menu-item-group v-for="(cmenu, cindex) in menu.items">
+              <el-menu-item index="{index}" @click="addElement(index,cindex)">{{cmenu.title}}</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </template>
+        <template v-else>
+          <el-menu-item index="{index}" @click="addElement(index,'')">
+            <i :class="setClass(menu.icon)"></i>
+            <span slot="title">{{menu.title}}</span>
+          </el-menu-item>
+        </template>         
       </el-menu>
       <el-menu>
         <el-menu-item index="20" @click="saveElement()">
@@ -17,7 +25,7 @@
         </el-menu-item>
       </el-menu>
     </el-aside>
-    <el-container>
+    <el-container v-loading="loading">
       <el-main>
         <div class="draw-main" :style="{width:width+'px',height:height+'px'}">
           <div class="list" id="list" :isDraggable="true">
@@ -27,29 +35,30 @@
                               :h="rect.height"
                               :x="rect.left"
                               :y="rect.top"
-                              :parentW="listWidth"
-                              :parentH="listHeight"
+                              :parent-w="listWidth"
+                              :parent-h="listHeight"
                               :axis="rect.axis"
-                              :isActive="rect.active"
+                              :is-active="rect.active"
                               :minw="rect.minw"
                               :minh="rect.minh"
-                              :isDraggable="rect.draggable"
-                              :isResizable="rect.resizable"
-                              :parentLimitation="true"
-                              :snapToGrid="rect.snapToGrid"
-                              :aspectRatio="rect.aspectRatio"
+                              :is-draggable="rect.draggable"
+                              :is-resizable="rect.resizable"
+                              :parent-limitation="true"
+                              :snap-to-grid="rect.snapToGrid"
+                              :aspect-ratio="rect.aspectRatio"
                               :z="rect.zIndex"
-                              :contentClass="rect.class"
+                              :content-class="rect.class"
                               v-on:activated="activateEv(index)"
                               v-on:deactivated="deactivateEv(index)"
                               v-on:dragging="changePosition($event, index)"
                               v-on:resizing="changeSize($event, index)"
                               :type="rect.type"
-                              :imageUrl="rect.imageUrl"
+                              :image-url="rect.imageUrl"
                               :headline="rect.headline"
                               :deadline="rect.deadline"
               >
                   <div class="filler" :style="{backgroundColor:rect.color}">
+                    <el-button class="float-button-copy" type="primary" icon="el-icon-document-copy" size="mini" @click="toCopy(index)" round></el-button>
                     <el-button class="float-button-bottom" type="primary" icon="el-icon-bottom" size="mini" @click="toBottom(index)" round></el-button>
                     <el-button class="float-button-top" type="primary" icon="el-icon-top" size="mini" @click="toTop(index)" round></el-button>
                     <el-button class="float-button-edit" type="primary" icon="el-icon-edit" size="mini" @click="editElement(index)" round></el-button>
@@ -83,6 +92,25 @@
                           <c-button :rect="rect"></c-button>
                         </template>
                       </template>
+                    </template>
+                    <template v-else-if="rect.type === '6'">
+                      <div :style="{backgroundColor:rect.backgroundColor}" style="width:100%;height:100%"></div>
+                    </template>
+                    <template v-else-if="rect.type === '7'">
+                      <el-carousel :height="rect.height+'px'" :type="rect.carouselType?rect.carouselType:'default'" :interval="parseInt(rect.carouselInterval)*1000" :direction="rect.carouselDirection" :autoplay="rect.carouselAuto==='true'?true:false">
+                        <el-carousel-item v-for="(item,key) in rect.carouselItem">  
+                          <el-button class="carousel-button-add" type="el-button el-button--info is-circle" icon="el-icon-document-add" size="mini" @click="addCarousel(index,key)" round></el-button>                           
+                          <el-button class="carousel-button-edit" type="el-button el-button--info is-circle" icon="el-icon-edit" size="mini" @click="editCarousel(index,key)" round></el-button>
+                          <el-button class="carousel-button-remove" type="el-button el-button--info is-circle" icon="el-icon-delete" @click="removeCarousel(index,key)" size="mini" round></el-button>
+                          <a>
+                          <div class = "carousel-headline">
+                            <div :style="{fontWeight:item.fontWeight,fontStyle:item.fontStyle,color:item.fontColor,fontSize:item.fontSize,textAlign:item.fontPosition,lineHeight:item.height+'px'}">{{item.headline}}</div>
+                            <div :style="{fontWeight:item.fontWeight,fontStyle:item.fontStyle,color:item.fontColor,fontSize:item.fontSize,textAlign:item.fontPosition,lineHeight:item.height+'px'}">{{item.subHeadline}}</div>
+                          </div>
+                          </a>
+                          <img :src="item.imageBannerUrl" alt="" width="100%" height="100%">
+                        </el-carousel-item>
+                      </el-carousel>
                     </template>
                     <template v-else>
                       <p class="{rect.class}">{{rect.headline}}</p>
@@ -125,7 +153,7 @@
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
+            <img width="100%" :src="{dialogImageUrl}" alt="">
           </el-dialog>
         </template>
         <template v-else-if="cmsForm.type === '2'">
@@ -301,6 +329,52 @@
             <el-input v-model="cmsForm.articleUrl" />
           </el-form-item>
         </template>
+        <template v-else-if="cmsForm.type === '6'">
+          <el-form-item label="背景颜色">
+              <el-color-picker
+                v-model="cmsForm.backgroundColor"
+                show-alpha
+                :predefine="predefineColors">
+              </el-color-picker>
+          </el-form-item>
+        </template>
+        <template v-else-if="cmsForm.type === '7'">
+          <el-form-item label="模式">
+            <el-select v-model="cmsForm.carouselType" placeholder="请选择">
+              <el-option
+                v-for="item in carouselTypes"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数量">
+            <el-input v-model="cmsForm.carouselNum" />
+          </el-form-item>
+          <el-form-item label="间隔时间">
+            <el-input v-model="cmsForm.carouselInterval" />
+          </el-form-item>
+          <el-form-item label="自动播放">
+            <el-switch
+              v-model="cmsForm.carouselAuto"
+              active-text="开启"
+              active-value="true"
+              inactive-value="false"
+              inactive-text="关闭">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="方向">
+            <el-switch
+              v-model="cmsForm.carouselDirection"
+              active-text="横向"
+              inactive-text="竖向"
+              active-value="horizontal"
+              inactive-value="vertical"
+              >
+            </el-switch>
+          </el-form-item>
+        </template>
         <template v-else>
           <el-form-item label="文本">
             <el-input v-model="cmsForm.headline" />
@@ -310,6 +384,116 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click=" createData(cmsForm.index) ">确定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+  <div class="tab-container">
+    <el-dialog :visible.sync="dialogBannerFormVisible" @close="closeBannerDialog">
+      <el-form
+          :model="bannerForm"
+          ref="bannerForm"
+          label-position="left"
+          label-width="90px"
+          style="width: 400px; margin-left:50px;"
+        >
+          <el-form-item label="标题">
+            <el-input v-model="bannerForm.headline" />
+          </el-form-item>
+          <el-form-item label="副标题">
+            <el-input v-model="bannerForm.subHeadline" />
+          </el-form-item>
+          <el-form-item label="图片">
+            <el-upload
+              action="<?= $block->getImageUploadUrl() ?>"
+              :data="{'form_key':'<?php echo $block->getFormKey() ?>'}"
+              list-type="picture-card"
+              :auto-upload="true"
+              :on-preview="handlePictureCardPreview"
+              :on-success="uploadBannerSuccess" 
+              :on-remove="removeSuccess"
+              :file-list="fileBannerList"
+              :before-upload="beforeUpload"   
+              :class="{ hideUpload: !showUpload }"
+              :limit="1" >
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="{dialogImageUrl}" alt="">
+            </el-dialog>
+          </el-form-item>
+          <el-form-item label="文本位置">
+            <el-select
+              v-model="bannerForm.fontPosition"
+              class="filter-item"
+              placeholder="选择文本位置"
+            >
+              <el-option
+                v-for="item in fontPosition"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="字体大小">
+            <el-select
+              v-model="bannerForm.fontSize"
+              class="filter-item"
+              placeholder="选择字体大小"
+            >
+              <el-option
+                v-for="item in fontSize"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="字体颜色">
+            <el-color-picker
+              v-model="bannerForm.fontColor"
+              show-alpha
+              :predefine="predefineColors">
+            </el-color-picker>
+          </el-form-item>
+          <el-form-item label="加粗效果">
+            <el-select
+              v-model="cmsForm.fontWeight"
+              class="filter-item"
+              placeholder="选择加粗效果"
+            >
+              <el-option
+                v-for="item in fontWeight"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="斜体">
+            <el-select
+              v-model="cmsForm.fontStyle"
+              class="filter-item"
+              placeholder="选择加粗效果"
+            >
+              <el-option
+                v-for="item in fontStyle"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="分类">
+            <el-cascader
+            v-model="bannerForm.categoryId"
+            :options="categoryOptions"
+            :props="{ expandTrigger: 'hover',checkStrictly: true }" @change="onBannerCategoryChange" ref="myBannerCascader"></el-cascader>
+          </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogBannerFormVisible = false">取消</el-button>
+        <el-button type="primary" @click=" createBannerData(bannerForm.index,bannerForm.key) ">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -332,12 +516,16 @@ new Vue({
         cmsForm: {
           width: "",
           height: "",
-          imageUrl:"",
           videoId:"",
         },
+        bannerForm:{
+
+        },
         fileList: [],
+        fileBannerList:[],
         trackers: ['天', '时','分','秒'],
         dialogFormVisible: false,
+        dialogBannerFormVisible: false,
         dialogVisible: false,
         showUpload: true,
         fontPosition: [
@@ -359,16 +547,9 @@ new Vue({
           { label: "文字链接", key: "text" },
           { label: "按钮跳转", key: "button" },
         ],
-        buttonStyle:[
-          { label: "红字白框", key: "red-white" },
-          { label: "黑字黑框", key: "black-black" },
-          { label: "黑字红框", key: "black-red" },
-          { label: "白字白框", key: "white-white" },
-        ],
-        textStyle:[
-          { label: "黑字", key: "text-black" },
-          { label: "白字", key: "text-white" },
-          { label: "红字", key: "text-red" },
+        carouselTypes: [
+          { label: "卡片模式", key: "card" },
+          { label: "默认", key: "" },
         ],
         fontSize: <?= json_encode($block->getFontSize()) ?>,
         predefineColors: [
@@ -417,6 +598,11 @@ new Vue({
         videoId: '',
         videoFlag:false,
         videoUploadPercent: 0,
+        loading:false,
+        imageBannerUrl:'',
+        imageUrl:'',
+        dialogImageUrl:'',
+        dialogBannerImageUrl:'',
     }
   },
   mounted() {
@@ -436,6 +622,11 @@ new Vue({
   },
 
   methods: {
+    setClass (item) {
+      let obj = {};
+      obj[item] = true;
+      return obj;
+    },
     createUplader(_this) {
 				let uploader = new AliyunUpload.Vod({
 					userId: _this.videoDataForm.userId,
@@ -601,42 +792,54 @@ new Vue({
         this.elements.splice(index, 1);
         //elements.splice(elements.indexOf(element), 1);
       },
+      removeCarousel(index,key){
+        this.elements[index].carouselItem.splice(key, 1);
+        //elements.splice(elements.indexOf(element), 1);
+      },
       addElement(type,ctype) {
         type = type.toString();
         ctype = ctype.toString();
         switch(type){
-            case '0':
-                this.elements = [];
-                this.activeModel[ctype].type_json.forEach((item) => {
-                  this.elements.push(item);
-                })
-                this.dialogFormVisible = false;
-                break
             case '1':
             case '2':
             case '3':
             case '4':
             case '5':
+            case '6':
+            case '7':
               console.log(type);
               this.cmsForm = {
                 type:type,
-                ctype:ctype,
               };
+              this.dialogImageUrl = null;
               this.dialogFormVisible = true;
               break
+            case '0':
+              
+              this.loading = true;
+              this.width = this.activeModel[ctype].width;
+              this.height = this.activeModel[ctype].height;   
+              this.elements.length = 0;
+              setTimeout(() => {
+                console.log("ss");
+                JSON.parse(JSON.stringify(this.activeModel[ctype].type_json)).forEach(item => {
+                  this.elements.push(item);
+                  this.loading = false;
+                }) 
+                console.log("ss");
+              }, 2000);
+              
+              this.dialogFormVisible = false;
+              break
             default:
-              this.elements = [];
                 //这里是没有找到对应的值处理
               this.dialogFormVisible = false;
               break
         }
-        
-        
       },
       editElement(index) {
         switch(this.elements[index].type){
             case '1':
-              console.log(this.elements[index].imageUrl);
               this.cmsForm = {
                 index:index,
                 type:this.elements[index].type,
@@ -692,9 +895,11 @@ new Vue({
                 height: this.elements[index].height,
                 headline:this.elements[index].headline,
                 redirectType:this.elements[index].redirectType,
-                buttonStyle:this.elements[index].buttonStyle,
-                textStyle:this.elements[index].textStyle,
                 redirectStyle:this.elements[index].redirectStyle,
+                fontWeight:this.elements[index].fontWeight,
+                fontStyle:this.elements[index].fontStyle,
+                fontSize:this.elements[index].fontSize,
+                fontColor:this.elements[index].fontColor,
               };
               switch(this.elements[index].redirectType)
               {
@@ -712,6 +917,29 @@ new Vue({
                   break;
               }
               break
+            case '6':
+              this.cmsForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                backgroundColor:this.elements[index].backgroundColor,
+              };
+              break
+            case '7':
+              this.cmsForm = {
+                index:index,
+                type:this.elements[index].type,
+                width: this.elements[index].width,
+                height: this.elements[index].height,
+                carouselType:this.elements[index].carouselType,
+                carouselNum:this.elements[index].carouselNum,
+                carouselDirection:this.elements[index].carouselDirection,
+                carouselAuto:this.elements[index].carouselAuto,
+                carouselItem:this.elements[index].carouselItem,
+                carouselInterval:this.elements[index].carouselInterval,
+              };
+              break 
             default:
               this.cmsForm = {
                 index:index,
@@ -729,6 +957,31 @@ new Vue({
         }
         this.dialogFormVisible = true;
       },
+      editCarousel(index,key) {
+        this.fileBannerList = [{
+          name: "123.jpg",
+          url: this.elements[index].carouselItem[key].imageBannerUrl,
+        }],
+        this.bannerForm = {
+          index:index,
+          key:key,
+          imageBannerUrl: this.elements[index].carouselItem[key].imageBannerUrl,
+          headline:this.elements[index].carouselItem[key].headline,
+          subHeadline:this.elements[index].carouselItem[key].subHeadline,
+          fontPosition:this.elements[index].carouselItem[key].fontPosition,
+          fontWeight:this.elements[index].carouselItem[key].fontWeight,
+          fontStyle:this.elements[index].carouselItem[key].fontStyle,
+          fontSize:this.elements[index].carouselItem[key].fontSize,
+          fontColor:this.elements[index].carouselItem[key].fontColor,
+          categoryId:this.elements[index].carouselItem[key].categoryId,
+          name:this.elements[index].carouselItem[key].name,
+        };
+        this.dialogBannerFormVisible = true;
+      },
+      addCarousel(index,key){
+        this.elements[index].carouselItem.splice(key,0,{});
+        //elements.splice(elements.indexOf(element), 1);
+      },
       //添加增加题目
       createData(index) {
         const params = this.cmsForm;
@@ -740,6 +993,7 @@ new Vue({
           console.log(params.type);
           switch(params.type){
               case '1':
+                console.log(this.elements);
                 this.elements.push({
                     width: params.width,
                     height: params.height,
@@ -752,6 +1006,9 @@ new Vue({
                 });
                 break;
               case '2':
+                console.log(params.videoId);
+                console.log(params.videoUrl);
+                console.log(params.videoCoverUrl);
                 this.elements.push({
                     width: params.width,
                     height: params.height,
@@ -806,9 +1063,11 @@ new Vue({
                     zIndex:1,
                     redirectType:params.redirectType,
                     headline:params.headline,
-                    buttonStyle:params.buttonStyle,
-                    textStyle:params.textStyle,
                     redirectStyle:params.redirectStyle,
+                    fontWeight:params.fontWeight,
+                    fontStyle:params.fontStyle,
+                    fontSize:params.fontSize,
+                    fontColor:params.fontColor,
                 };
                 switch(params.redirectType)
                 {
@@ -828,6 +1087,51 @@ new Vue({
                 }
                 this.elements.push(redirctData);
                 break;
+              case '6':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                    backgroundColor:params.backgroundColor,
+                });
+                break;
+              case '6':
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                    backgroundColor:params.backgroundColor,
+                });
+                break;
+              case '7':
+                var carouselItems = [];
+                for (let index = 0; index <params.carouselNum; index++) {
+                   carouselItems.push({key:index});
+                }
+                this.elements.push({
+                    width: params.width,
+                    height: params.height,
+                    left: 10,
+                    top: 10,
+                    isActive: true,
+                    type:params.type,
+                    zIndex:1,
+                    carouselType:params.carouselType,
+                    carouselNum:params.carouselNum,
+                    carouselDirection:params.carouselDirection,
+                    carouselAuto:params.carouselAuto,
+                    carouselItem:carouselItems,
+                    carouselInterval:params.carouselInterval
+                });
+                break;
               default:
                 break;
           }
@@ -841,7 +1145,6 @@ new Vue({
               case '2':
                 this.elements[index].width = params.width;
                 this.elements[index].height = params.height;
-                this.elements[index].imageUrl = this.imageUrl;
                 this.elements[index].videoId = params.videoId;
                 this.elements[index].videoUrl = params.videoUrl;
                 this.elements[index].videoCoverUrl = this.videoCoverUrl;
@@ -866,9 +1169,11 @@ new Vue({
                 this.elements[index].height = params.height;
                 this.elements[index].headline = params.headline;
                 this.elements[index].redirectType = params.redirectType;
-                this.elements[index].buttonStyle = params.buttonStyle;
-                this.elements[index].textStyle = params.textStyle;
                 this.elements[index].redirectStyle = params.redirectStyle;
+                this.elements[index].fontWeight = params.fontWeight;
+                this.elements[index].fontStyle = params.fontStyle;
+                this.elements[index].fontSize = params.fontSize;
+                this.elements[index].fontColor = params.fontColor;
                 switch(params.redirectType)
                 {
                   case 'category':
@@ -886,6 +1191,21 @@ new Vue({
                     break;
                 }
                 break;
+              case '6':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].backgroundColor = params.backgroundColor;
+                break;
+              case '7':
+                this.elements[index].width = params.width;
+                this.elements[index].height = params.height;
+                this.elements[index].carouselType = params.carouselType;
+                this.elements[index].carouselNum = params.carouselNum;
+                this.elements[index].carouselDirection = params.carouselDirection;
+                this.elements[index].carouselAuto = params.carouselAuto;
+                this.elements[index].carouselItem = params.carouselItem;
+                this.elements[index].carouselInterval = params.carouselInterval;
+                break;
               default:
                 break;
           }
@@ -893,24 +1213,43 @@ new Vue({
         }
         this.dialogFormVisible = false;
       },
+      //添加增加题目
+      createBannerData(index,key) {
+        const params = this.bannerForm;
+        this.elements[index].carouselItem[key].imageBannerUrl = this.imageBannerUrl?this.imageBannerUrl:params.imageBannerUrl;
+        this.elements[index].carouselItem[key].headline = params.headline;
+        this.elements[index].carouselItem[key].subHeadline = params.subHeadline;
+        this.elements[index].carouselItem[key].fontPosition = params.fontPosition;
+        this.elements[index].carouselItem[key].fontWeight = params.fontWeight;
+        this.elements[index].carouselItem[key].fontStyle = params.fontStyle;
+        this.elements[index].carouselItem[key].fontColor = params.fontColor;
+        this.elements[index].carouselItem[key].fontSize = params.fontSize;
+        this.elements[index].carouselItem[key].categoryId = params.categoryId;
+        this.elements[index].carouselItem[key].name = params.name;
+        Vue.set(this.elements, index, this.elements[index]);
+        this.dialogBannerFormVisible = false;
+      },
       toggleUpload() {
         this.showUpload = !this.showUpload
       },
       uploadSuccess(response, file, fileList) {
          this.imageUrl = response;
       },
+      uploadBannerSuccess(response, file, fileList) {
+         this.imageBannerUrl = response;
+      },
       beforeUpload(file) {
           // 这里我也准备只接受jpg的格式储存所以我就直接用了官方提供的代码
-          const isJPG = file.type === 'image/jpeg'||'image/png';
-          const isLt2M = file.size / 1024 / 1024 < 2;
+          const isJPG = file.type === 'image/jpeg'||'image/png'||'image/jpg';
+          const isLt10M = file.size / 1024 / 1024 < 10;
           
           if (!isJPG) {
               this.$message.error('上传图片只能是 JPG 格式!');
           }
-          if (!isLt2M) {
-              this.$message.error('上传图片大小不能超过 2MB!');
+          if (!isLt10M) {
+              this.$message.error('上传图片大小不能超过 10MB!');
           }
-          return isJPG && isLt2M;
+          return isJPG && isLt10M;
       },
       handleRemove(file, fileList) {
         console.log(file, fileList);
@@ -928,11 +1267,18 @@ new Vue({
           Vue.set(this.elements, index, this.elements[index]);
         }
       },
+      toCopy(index){
+          var elementJson = JSON.parse(JSON.stringify(this.elements[index]));
+          this.elements.push(elementJson);
+      },
       toTop(index){
         this.elements[index].zIndex = parseInt(this.elements[index].zIndex)+1;
         Vue.set(this.elements, index, this.elements[index]);
       },
       closeDialog(){
+
+      },
+      closeBannerDialog(){
 
       },
       removeSuccess(){
@@ -1004,6 +1350,32 @@ new Vue({
           }
         }
       },
+      onBannerCategoryChange(value){
+        if(value)
+        {
+          if(value[3])
+          {
+              this.bannerForm.category = value[3];
+              const Nodes = this.$refs.myBannerCascader.getCheckedNodes()[0];
+              this.bannerForm.name = Nodes.parent.parent.parent.label;
+          }else if(value[2])
+          {
+              this.bannerForm.category = value[2];
+              const Nodes = this.$refs.myBannerCascader.getCheckedNodes()[0];
+              this.bannerForm.name = Nodes.parent.parent.label;
+          }else if(value[1])
+          {
+              this.bannerForm.category = value[1];
+              const Nodes = this.$refs.myBannerCascader.getCheckedNodes()[0];
+              this.bannerForm.name = Nodes.parent.label;
+          }else if(value[0])
+          {
+              this.bannerForm.category = value[0];
+              const Nodes = this.$refs.myBannerCascader.getCheckedNodes()[0];
+              this.bannerForm.name = Nodes.label;
+          }
+        }
+      },
       async saveElement(){
         var elementsArr = Object.keys(this.elements).map(key => {
             //console.log(key); //为每个键名
@@ -1037,10 +1409,12 @@ new Vue({
               break;
             case '5':
               data.headline = this.elements[key].headline;
-              data.buttonStyle = this.elements[key].buttonStyle;
-              data.redirectType = this.elements[key].redirectType;
-              data.textStyle = this.elements[key].textStyle;
               data.redirectStyle = this.elements[key].redirectStyle;
+              data.redirectType = this.elements[key].redirectType;
+              data.fontSize = this.elements[key].fontSize;
+              data.fontStyle = this.elements[key].fontStyle;
+              data.fontWeight = this.elements[key].fontWeight;
+              data.fontColor = this.elements[key].fontColor;
               switch(data.redirectType)
               {
                 case 'category':
@@ -1057,6 +1431,17 @@ new Vue({
                   data.articleUrl = this.elements[key].articleUrl;
                   break;
               }
+              break;
+            case '6':
+              data.backgroundColor = this.elements[key].backgroundColor;
+              break;
+            case '7':
+              data.carouselType = this.elements[key].carouselType;
+              data.carouselNum = this.elements[key].carouselNum;
+              data.carouselDirection = this.elements[key].carouselDirection;
+              data.carouselAuto = this.elements[key].carouselAuto;
+              data.carouselItem = this.elements[key].carouselItem;
+              data.carouselInterval = this.elements[key].carouselInterval;
               break;
             default:
               break;

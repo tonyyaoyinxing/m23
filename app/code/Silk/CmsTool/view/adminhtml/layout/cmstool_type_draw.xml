@@ -15,7 +15,7 @@
         <script src="Silk_CmsTool::js/vue.js"/>
         <script src="Silk_CmsTool::js/lib/uuidv4.min.js"/>
         <script src="Silk_CmsTool::js/lib/moment.min.js"/>
-        <script src="Silk_CmsTool::js/lib/elementUi.js"/>
+        <script src="Silk_CmsTool::js/lib/element-ui.js"/>
         <script src="Silk_CmsTool::js/lib/axios.min.js"/>
         <script src="Silk_CmsTool::js/components/vue-drag-resize.js"/>
         <script src="Silk_CmsTool::js/components/countdown.js"/>

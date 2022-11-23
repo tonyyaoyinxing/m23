@@ -1,0 +1,17 @@
+<div id="app">
+  <button @click="count++">
+    Count is: {{ count }}
+  </button>
+  <el-button></el-button>
+</div>
+<script>
+require(['vue','ELEMENT'],function(Vue,ELEMENT){
+    ELEMENT.install(Vue);
+    new Vue({
+        el: '#app',
+        data: {
+            count: 0
+        }
+    });
+});
+</script>

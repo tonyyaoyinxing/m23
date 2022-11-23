@@ -33,6 +33,7 @@
         <column xsi:type="smallint" name="width" nullable="false" comment="Block Width"/>
         <column xsi:type="smallint" name="height" nullable="false" comment="Block Height"/>
         <column xsi:type="text" name="type_json" nullable="false" comment="Block Type Element Json"/>
+        <column xsi:type="text" name="type_json_mb" nullable="false" comment="Mobile Block Type Element Json"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="block_type_id"/>
         </constraint>

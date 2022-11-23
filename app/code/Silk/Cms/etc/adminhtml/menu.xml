@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Silk_Cms::cms_manage" title="Cms Manage" module="Silk_Cms" sortOrder="100" resource="Silk_Cms::cms_manage"/>
+        <add id="Silk_Cms::type_manage" title="Type List" module="Silk_Cms" sortOrder="20" action="cms/type/edit" resource="Silk_Cms::type_manage" parent="Silk_Cms::cms_manage"/>
+    </menu>
+</config>

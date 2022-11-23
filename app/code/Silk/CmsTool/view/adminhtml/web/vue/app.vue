@@ -59,6 +59,9 @@
                   </template>
                 </template>
               </template>
+              <template v-else-if="rect.type === '7'">
+                <el-button class="carousel-button-add" type="el-button el-button--info is-circle" icon="el-icon-document-add"></el-button>
+              </template>
               <template v-else>
                 <p class="{rect.class}">{{rect.headline}}</p>
               </template>
